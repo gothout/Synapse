@@ -1,10 +1,7 @@
 package main
 
-import (
-	"Synapse/cmd"
-	"fmt"
-)
+import "Synapse/cmd"
 
 func main() {
-	fmt.Println(cmd.Inicio("Inicia!"))
+	cmd.InitServer()
 }
