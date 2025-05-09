@@ -6,9 +6,8 @@ import (
 )
 
 type CreateEnterpriseDTO struct {
-	Nome        string `json:"nome" binding:"required"`
-	Cnpj        string `json:"cnpj" binding:"required"`
-	Responsavel string `json:"responsavel" binding:"required"`
+	Nome string `json:"nome" binding:"required"`
+	Cnpj string `json:"cnpj" binding:"required"`
 }
 
 func (dto CreateEnterpriseDTO) ToModel() model.AdminEnterprise {
