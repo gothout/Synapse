@@ -18,7 +18,7 @@ func main() {
 			return
 		}
 
-		fmt.Printf("❌ Comando não reconhecido: %s\n", arg)
+		fmt.Printf("❌ Comando não reconhecido: %s\n digite --help para ajuda.", arg)
 		return
 	}
 
