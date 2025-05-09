@@ -3,6 +3,7 @@ package checks
 import (
 	checkDB "Synapse/cmd/operations/check/db"
 	createDB "Synapse/cmd/operations/create/db"
+	dropDB "Synapse/cmd/operations/drop/db"
 )
 
 type Check interface {
@@ -12,6 +13,7 @@ type Check interface {
 var checkMap = map[string]Check{
 	"--check-db":  checkDB.CheckDatabase{},
 	"--create-db": createDB.DatabaseCreator{},
+	"--drop-db":   dropDB.DatabaseDropper{},
 }
 
 // Get retorna o check se ele existir no mapa
