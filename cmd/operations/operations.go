@@ -4,6 +4,7 @@ import (
 	checkDB "Synapse/cmd/operations/check/db"
 	createDB "Synapse/cmd/operations/create/db"
 	dropDB "Synapse/cmd/operations/drop/db"
+	HelperCmd "Synapse/cmd/operations/help"
 )
 
 type Check interface {
@@ -11,6 +12,7 @@ type Check interface {
 }
 
 var checkMap = map[string]Check{
+	"--help":      HelperCmd.HelperCmd{},
 	"--check-db":  checkDB.CheckDatabase{},
 	"--create-db": createDB.DatabaseCreator{},
 	"--drop-db":   dropDB.DatabaseDropper{},
