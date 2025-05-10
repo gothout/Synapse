@@ -22,3 +22,12 @@ func FromModel(ent model.AdminEnterprise) EnterpriseResponseDTO {
 		CreatedAt: ent.CreatedAt,
 	}
 }
+
+// FromModelList converte uma lista de model.AdminEnterprise para []EnterpriseResponseDTO.
+func FromModelList(ents []model.AdminEnterprise) []EnterpriseResponseDTO {
+	response := make([]EnterpriseResponseDTO, 0, len(ents))
+	for _, ent := range ents {
+		response = append(response, FromModel(ent))
+	}
+	return response
+}

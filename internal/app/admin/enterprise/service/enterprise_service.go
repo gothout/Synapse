@@ -19,3 +19,23 @@ func NewService(r repository.Repository) Service {
 func (s *service) Create(enterprise *model.AdminEnterprise) (*model.AdminEnterprise, error) {
 	return s.repo.Create(enterprise)
 }
+
+// Busca empresa por CNPJ
+func (s *service) ReadByCNPJ(cnpj string) (*model.AdminEnterprise, error) {
+	return s.repo.ReadByCNPJ(cnpj)
+}
+
+// Busca empresa por NOME
+func (s *service) ReadByNome(nome string) (*model.AdminEnterprise, error) {
+	return s.repo.ReadByNome(nome)
+}
+
+// Buscar empresa por ID
+func (s *service) ReadByID(id int64) (*model.AdminEnterprise, error) {
+	return s.repo.ReadByID(id)
+}
+
+// Buscar empresas por Page
+func (s *service) ReadAll(page int) ([]model.AdminEnterprise, error) {
+	return s.repo.ReadAll(page)
+}

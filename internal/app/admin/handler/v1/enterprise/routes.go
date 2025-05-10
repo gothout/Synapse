@@ -19,5 +19,10 @@ func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 	group := router.Group("/enterprise")
 	{
 		group.POST("/", ctrl.Create)
+		group.GET("/", ctrl.ReadAll)
+		group.GET("/cnpj/:cnpj", ctrl.ReadByCNPJ)
+		group.GET("/nome/:nome", ctrl.ReadByNome)
+		group.GET("/id/:id", ctrl.ReadByID)
+
 	}
 }
