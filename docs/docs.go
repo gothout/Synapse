@@ -199,6 +199,47 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Remove uma empresa com base no CNPJ fornecido.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Empresa"
+                ],
+                "summary": "Deletar empresa por CNPJ",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "cnpj",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/enterprise.EnterpriseDeletedResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
             }
         },
         "/admin/v1/enterprise/id/{id}": {
@@ -438,6 +479,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "enterprise.EnterpriseDeletedResponseDTO": {
+            "type": "object",
+            "properties": {
+                "cnpj": {
                     "type": "string"
                 }
             }

@@ -9,6 +9,11 @@ definitions:
     - cnpj
     - nome
     type: object
+  enterprise.EnterpriseDeletedResponseDTO:
+    properties:
+      cnpj:
+        type: string
+    type: object
   enterprise.EnterpriseResponseDTO:
     properties:
       cnpj:
@@ -151,6 +156,33 @@ paths:
       tags:
       - v1 - Empresa
   /admin/v1/enterprise/cnpj/{cnpj}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove uma empresa com base no CNPJ fornecido.
+      parameters:
+      - in: path
+        name: cnpj
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/enterprise.EnterpriseDeletedResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Deletar empresa por CNPJ
+      tags:
+      - v1 - Empresa
     get:
       consumes:
       - application/json

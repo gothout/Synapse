@@ -9,4 +9,5 @@ type Repository interface {
 	ReadByID(id int64) (*enterprise.AdminEnterprise, error)
 	ReadAll(page int) ([]enterprise.AdminEnterprise, error)
 	UpdateByCNPJ(cnpj, NewCNPJ string, enterprise *enterprise.AdminEnterprise) (*enterprise.AdminEnterprise, error)
+	DeleteByCNPJ(cnpj string) (string, error)
 }
