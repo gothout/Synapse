@@ -1,0 +1,365 @@
+definitions:
+  enterprise.CreateEnterpriseDTO:
+    properties:
+      cnpj:
+        type: string
+      nome:
+        type: string
+    required:
+    - cnpj
+    - nome
+    type: object
+  enterprise.EnterpriseResponseDTO:
+    properties:
+      cnpj:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  enterprise.EnterpriseUpdatedResponseDTO:
+    properties:
+      cnpj:
+        type: string
+      nome:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  enterprise.UpdateEnterpriseByCNPJDTO:
+    properties:
+      cnpj:
+        description: novo CNPJ opcional
+        type: string
+      nome:
+        description: nome opcional
+        type: string
+    required:
+    - cnpj
+    type: object
+  rest_err.Causes:
+    properties:
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  rest_err.RestErr:
+    properties:
+      causes:
+        items:
+          $ref: '#/definitions/rest_err.Causes'
+        type: array
+      code:
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  rule.AdminRuleDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  rule.AdminRuleListDTO:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/rule.AdminRuleDTO'
+        type: array
+      limit:
+        type: integer
+      offset:
+        type: integer
+      total:
+        type: integer
+    type: object
+  rule.RulePermissionDTO:
+    properties:
+      namespace:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /admin/v1/enterprise:
+    get:
+      consumes:
+      - application/json
+      description: Lista todas as empresas com suporte a paginação
+      parameters:
+      - description: Número da página
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/enterprise.EnterpriseResponseDTO'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Listar todas as empresas
+      tags:
+      - v1 - Empresa
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova empresa com CNPJ e nome
+      parameters:
+      - description: Dados da empresa
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/enterprise.CreateEnterpriseDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/enterprise.EnterpriseResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Criar empresa
+      tags:
+      - v1 - Empresa
+  /admin/v1/enterprise/cnpj/{cnpj}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna os dados de uma empresa com base no CNPJ fornecido.
+      parameters:
+      - description: CNPJ da empresa
+        in: path
+        name: cnpj
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/enterprise.EnterpriseResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Buscar empresa por CNPJ
+      tags:
+      - v1 - Empresa
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de uma empresa a partir do CNPJ fornecido na
+        URL
+      parameters:
+      - description: CNPJ da empresa atual
+        in: path
+        name: cnpj
+        required: true
+        type: string
+      - description: Dados de atualização
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/enterprise.UpdateEnterpriseByCNPJDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/enterprise.EnterpriseUpdatedResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Atualizar empresa por CNPJ
+      tags:
+      - v1 - Empresa
+  /admin/v1/enterprise/id/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna os dados de uma empresa com base no ID.
+      parameters:
+      - description: ID da empresa
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/enterprise.EnterpriseResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Buscar empresa por ID
+      tags:
+      - v1 - Empresa
+  /admin/v1/enterprise/nome/{nome}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna os dados de uma empresa com base no nome fornecido.
+      parameters:
+      - description: Nome da empresa
+        in: path
+        name: nome
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/enterprise.EnterpriseResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Buscar empresa por nome
+      tags:
+      - v1 - Empresa
+  /admin/v1/rules:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todas as regras com suporte a paginação
+      parameters:
+      - description: Quantidade de resultados
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Deslocamento dos resultados
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rule.AdminRuleListDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Listar regras
+      tags:
+      - v1 - Regra
+  /admin/v1/rules/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna os dados de uma regra com base no ID
+      parameters:
+      - description: ID da regra
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rule.AdminRuleDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Buscar regra por ID
+      tags:
+      - v1 - Regra
+  /admin/v1/rules/{id}/permissions:
+    get:
+      consumes:
+      - application/json
+      description: 'Retorna a lista de permissões em formato namespace (ex: admin.enterprise.create)'
+      parameters:
+      - description: ID da regra
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/rule.RulePermissionDTO'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Buscar permissões da regra
+      tags:
+      - v1 - Regra
+swagger: "2.0"
