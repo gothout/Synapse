@@ -18,6 +18,17 @@ func NewEnterpriseController(s enterpriseService.Service) *EnterpriseController 
 	return &EnterpriseController{service: s}
 }
 
+// Create godoc
+// @Summary      Criar empresa
+// @Description  Cria uma nova empresa com CNPJ e nome
+// @Tags         v1 - Empresa
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.CreateEnterpriseDTO  true  "Dados da empresa"
+// @Success      201      {object}  dto.EnterpriseResponseDTO
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /admin/v1/enterprise [post]
 func (ec *EnterpriseController) Create(ctx *gin.Context) {
 	var req dto.CreateEnterpriseDTO
 
@@ -54,6 +65,17 @@ func (ec *EnterpriseController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, dto.FromModel(*created))
 }
 
+// ReadByCNPJ godoc
+// @Summary      Buscar empresa por CNPJ
+// @Description  Retorna os dados de uma empresa com base no CNPJ fornecido.
+// @Tags         v1 - Empresa
+// @Accept       json
+// @Produce      json
+// @Param        cnpj  path      string  true  "CNPJ da empresa"
+// @Success      200   {object}  dto.EnterpriseResponseDTO
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      404   {object}  rest_err.RestErr
+// @Router       /admin/v1/enterprise/cnpj/{cnpj} [get]
 // Busca empresa por CNPJ
 func (ec *EnterpriseController) ReadByCNPJ(ctx *gin.Context) {
 	var req dto.ReadEnterpriseCNPJDTO
@@ -86,6 +108,17 @@ func (ec *EnterpriseController) ReadByCNPJ(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.FromModel(*enterprise))
 }
 
+// ReadByNome godoc
+// @Summary      Buscar empresa por nome
+// @Description  Retorna os dados de uma empresa com base no nome fornecido.
+// @Tags         v1 - Empresa
+// @Accept       json
+// @Produce      json
+// @Param        nome  path      string  true  "Nome da empresa"
+// @Success      200   {object}  dto.EnterpriseResponseDTO
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      404   {object}  rest_err.RestErr
+// @Router       /admin/v1/enterprise/nome/{nome} [get]
 // Busca empresa por NOME
 func (ec *EnterpriseController) ReadByNome(ctx *gin.Context) {
 	var req dto.ReadEnterpriseNOMEDTO
@@ -109,6 +142,17 @@ func (ec *EnterpriseController) ReadByNome(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.FromModel(*enterprise))
 }
 
+// ReadByID godoc
+// @Summary      Buscar empresa por ID
+// @Description  Retorna os dados de uma empresa com base no ID.
+// @Tags         v1 - Empresa
+// @Accept       json
+// @Produce      json
+// @Param        id  path      string  true  "ID da empresa"
+// @Success      200   {object}  dto.EnterpriseResponseDTO
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      404   {object}  rest_err.RestErr
+// @Router       /admin/v1/enterprise/id/{id} [get]
 // Busca empresa por ID
 func (ec *EnterpriseController) ReadByID(ctx *gin.Context) {
 	var req dto.ReadEnterpriseIDDTO
@@ -132,6 +176,17 @@ func (ec *EnterpriseController) ReadByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.FromModel(*enterprise))
 }
 
+// ReadAll godoc
+// @Summary      Listar todas as empresas
+// @Description  Lista todas as empresas com suporte a paginação
+// @Tags         v1 - Empresa
+// @Accept       json
+// @Produce      json
+// @Param        page  query     int  true  "Número da página"
+// @Success      200   {array}   dto.EnterpriseResponseDTO
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      404   {object}  rest_err.RestErr
+// @Router       /admin/v1/enterprise [get]
 // Busca empresas por Page
 func (ec *EnterpriseController) ReadAll(ctx *gin.Context) {
 	var req dto.ReadEnterpriseAllDTO
@@ -164,6 +219,18 @@ func (ec *EnterpriseController) ReadAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dto.FromModelList(empresas))
 }
 
+// UpdateByCNPJ godoc
+// @Summary      Atualizar empresa por CNPJ
+// @Description  Atualiza os dados de uma empresa a partir do CNPJ fornecido na URL
+// @Tags         v1 - Empresa
+// @Accept       json
+// @Produce      json
+// @Param        cnpj    path      string                                 true  "CNPJ da empresa atual"
+// @Param        request body      dto.UpdateEnterpriseByCNPJDTO         true  "Dados de atualização"
+// @Success      200     {object}  dto.EnterpriseUpdatedResponseDTO
+// @Failure      400     {object}  rest_err.RestErr
+// @Failure      500     {object}  rest_err.RestErr
+// @Router       /admin/v1/enterprise/cnpj/{cnpj} [put]
 // Atualiza uma empresa com base no CNPJ original (URI) e dados novos (JSON)
 func (ec *EnterpriseController) UpdateByCNPJ(ctx *gin.Context) {
 	var req dto.UpdateEnterpriseByCNPJDTO
