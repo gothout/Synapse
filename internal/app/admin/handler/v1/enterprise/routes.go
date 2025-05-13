@@ -23,6 +23,6 @@ func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 		group.GET("/cnpj/:cnpj", ctrl.ReadByCNPJ)
 		group.GET("/nome/:nome", ctrl.ReadByNome)
 		group.GET("/id/:id", ctrl.ReadByID)
-
+		group.PUT("/cnpj/:cnpj", ctrl.UpdateByCNPJ)
 	}
 }

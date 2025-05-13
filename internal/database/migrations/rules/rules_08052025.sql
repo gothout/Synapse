@@ -24,8 +24,3 @@ CREATE TABLE IF NOT EXISTS admin_rule_permission (
     permission_id INTEGER NOT NULL REFERENCES admin_permission(id) ON DELETE CASCADE,
     PRIMARY KEY (rule_id, permission_id)
 );
-
-
-
-
-

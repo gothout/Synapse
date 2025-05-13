@@ -163,3 +163,54 @@ func (ec *EnterpriseController) ReadAll(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.FromModelList(empresas))
 }
+
+// Atualiza uma empresa com base no CNPJ original (URI) e dados novos (JSON)
+func (ec *EnterpriseController) UpdateByCNPJ(ctx *gin.Context) {
+	var req dto.UpdateEnterpriseByCNPJDTO
+
+	// Bind do CNPJ da URI
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("CNPJ ausente ou inválido na URL", []rest_err.Causes{
+			rest_err.NewCause("uri", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Bind do corpo JSON
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Dados do corpo ausentes ou inválidos", []rest_err.Causes{
+			rest_err.NewCause("body", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Validação personalizada
+	if err := binding.ValidateUpdateEnterpriseDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação nos dados de atualização", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Monta o model com nome e cnpj novos (ou vazios)
+	model := dto.UpdateEnterpriseByCNPJDTO{
+		Cnpj: req.NewCNPJ,
+		Nome: req.Nome,
+	}.UpdateToModel()
+
+	// Chama o service
+	updated, err := ec.service.UpdateByCNPJ(req.Cnpj, req.NewCNPJ, &model)
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("Erro ao atualizar empresa", []rest_err.Causes{
+			rest_err.NewCause("repository", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Retorno mais limpo (nome, cnpj e update_at)
+	ctx.JSON(http.StatusOK, dto.FromModelUpdateResponse(*updated))
+}

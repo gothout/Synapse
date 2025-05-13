@@ -8,7 +8,7 @@ type Service interface {
 	ReadByNome(nome string) (*enterprise.AdminEnterprise, error)
 	ReadByID(id int64) (*enterprise.AdminEnterprise, error)
 	ReadAll(page int) ([]enterprise.AdminEnterprise, error)
-	//Read()
+	UpdateByCNPJ(cnpj, newCNPJ string, enterprise *enterprise.AdminEnterprise) (*enterprise.AdminEnterprise, error)
 	//Update()
 	//Delete()
 }

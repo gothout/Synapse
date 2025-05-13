@@ -39,3 +39,8 @@ func (s *service) ReadByID(id int64) (*model.AdminEnterprise, error) {
 func (s *service) ReadAll(page int) ([]model.AdminEnterprise, error) {
 	return s.repo.ReadAll(page)
 }
+
+// Atualiza empresa por CNPJ
+func (s *service) UpdateByCNPJ(cnpj, newCNPJ string, enterprise *model.AdminEnterprise) (*model.AdminEnterprise, error) {
+	return s.repo.UpdateByCNPJ(cnpj, newCNPJ, enterprise)
+}
