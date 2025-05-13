@@ -101,3 +101,16 @@ func ValidateUpdateEnterpriseDTO(input dto.UpdateEnterpriseByCNPJDTO) error {
 
 	return nil
 }
+
+// ValidateDeleteEnterpriseByCNPJDTO valida o DTO de exclusão por CNPJ (rota /empresa/cnpj/{cnpj})
+func ValidateDeleteEnterpriseByCNPJDTO(input dto.DeleteEnterpriseByCNPJDTO) error {
+	if strings.TrimSpace(input.Cnpj) == "" {
+		return errors.New("o CNPJ é obrigatório")
+	}
+
+	if err := validators.ValidateCNPJ(input.Cnpj); err != nil {
+		return fmt.Errorf("CNPJ inválido: %w", err)
+	}
+
+	return nil
+}

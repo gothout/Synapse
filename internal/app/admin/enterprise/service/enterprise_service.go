@@ -44,3 +44,8 @@ func (s *service) ReadAll(page int) ([]model.AdminEnterprise, error) {
 func (s *service) UpdateByCNPJ(cnpj, newCNPJ string, enterprise *model.AdminEnterprise) (*model.AdminEnterprise, error) {
 	return s.repo.UpdateByCNPJ(cnpj, newCNPJ, enterprise)
 }
+
+// Deleta empresa por CNPJ
+func (s *service) DeleteByCNPJ(cnpj string) (string, error) {
+	return s.repo.DeleteByCNPJ(cnpj)
+}
