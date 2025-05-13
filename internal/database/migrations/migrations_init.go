@@ -81,44 +81,48 @@ func DropAllTables(password string, db *pgxpool.Pool) error {
 		}
 
 		// Modifica o comando SQL CREATE TABLE para DROP TABLE
-		dropSQL := convertCreateToDrop(string(sqlContent))
-		fmt.Println("Comando utilizado: ", dropSQL)
-
-		fmt.Println("🔄 Dropando:", file)
-		if _, err := db.Exec(context.Background(), dropSQL); err != nil {
-			return fmt.Errorf("erro ao executar drop %s: %w", file, err)
+		dropSQLs := convertCreateToDrop(string(sqlContent))
+		for _, dropSQL := range dropSQLs {
+			fmt.Println("Comando utilizado: ", dropSQL)
+			if _, err := db.Exec(context.Background(), dropSQL); err != nil {
+				fmt.Println("⚠️ Erro ao executar drop:", err)
+				continue // continua mesmo com erro
+			}
+			fmt.Println("🗑️ Tabela dropada com sucesso.")
 		}
-		fmt.Println("🗑️ Tabela dropada com sucesso:", file)
+
 	}
 
 	return nil
 }
 
 // Função auxiliar para converter comandos CREATE TABLE em DROP TABLE
-func convertCreateToDrop(sqlContent string) string {
+func convertCreateToDrop(sqlContent string) []string {
 	lines := strings.Split(sqlContent, "\n")
-	var tableName string
+	var dropCommands []string
 
 	for _, line := range lines {
-		upperLine := strings.ToUpper(strings.TrimSpace(line))
+		trimmed := strings.TrimSpace(line)
+		upper := strings.ToUpper(trimmed)
 
-		if strings.HasPrefix(upperLine, "CREATE TABLE IF NOT EXISTS") {
-			parts := strings.Fields(line)
-			if len(parts) >= 6 {
-				tableName = parts[5] // CREATE TABLE IF NOT EXISTS nome_tabela
-			}
-		} else if strings.HasPrefix(upperLine, "CREATE TABLE") {
-			parts := strings.Fields(line)
-			if len(parts) >= 3 {
-				tableName = parts[2] // CREATE TABLE nome_tabela
-			}
+		if strings.HasPrefix(trimmed, "--") || trimmed == "" {
+			continue
 		}
 
-		if tableName != "" {
-			tableName = strings.Trim(tableName, `"';`)
-			break
+		if strings.HasPrefix(upper, "CREATE TABLE") {
+			// Remove IF NOT EXISTS se existir
+			trimmed = strings.ReplaceAll(trimmed, "IF NOT EXISTS", "")
+			trimmed = strings.ReplaceAll(trimmed, "CREATE TABLE", "")
+			trimmed = strings.TrimSpace(trimmed)
+
+			// Extrai nome da tabela
+			tableName := strings.Fields(trimmed)[0]
+			tableName = strings.Trim(tableName, `"'();`)
+
+			drop := fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE;", tableName)
+			dropCommands = append(dropCommands, drop)
 		}
 	}
 
-	return fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE;", tableName)
+	return dropCommands
 }

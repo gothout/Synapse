@@ -68,3 +68,36 @@ func ValidateReadEnterpriseAllDTO(input dto.ReadEnterpriseAllDTO) (int, error) {
 
 	return page, nil
 }
+
+func ValidateUpdateEnterpriseDTO(input dto.UpdateEnterpriseByCNPJDTO) error {
+	// Valida o CNPJ original da URI
+	cnpjOriginal := strings.TrimSpace(input.Cnpj)
+	if cnpjOriginal == "" {
+		return errors.New("o CNPJ de identificação da empresa é obrigatório")
+	}
+	if err := validators.ValidateCNPJ(cnpjOriginal); err != nil {
+		return fmt.Errorf("CNPJ original inválido: %w", err)
+	}
+
+	// Verifica se ao menos um campo para atualização foi informado
+	nome := strings.TrimSpace(input.Nome)
+	newCNPJ := strings.TrimSpace(input.NewCNPJ)
+
+	if nome == "" && newCNPJ == "" {
+		return errors.New("é necessário informar ao menos um dado para atualização (nome ou novo CNPJ)")
+	}
+
+	// Valida o novo nome, se informado
+	if nome != "" && len(nome) < 2 {
+		return errors.New("o nome informado é muito curto")
+	}
+
+	// Valida o novo CNPJ, se informado
+	if newCNPJ != "" {
+		if err := validators.ValidateCNPJ(newCNPJ); err != nil {
+			return fmt.Errorf("novo CNPJ inválido: %w", err)
+		}
+	}
+
+	return nil
+}
