@@ -25,10 +25,24 @@ type ReadEnterpriseAllDTO struct {
 	Page int `form:"page"`
 }
 
+type UpdateEnterpriseByCNPJDTO struct {
+	Cnpj    string `uri:"cnpj" binding:"required"` // CNPJ original (na URL)
+	Nome    string `json:"nome"`                   // nome opcional
+	NewCNPJ string `json:"cnpj"`                   // novo CNPJ opcional
+}
+
 func (dto CreateEnterpriseDTO) ToModel() model.AdminEnterprise {
 	return model.AdminEnterprise{
 		Nome:      dto.Nome,
 		Cnpj:      dto.Cnpj,
 		CreatedAt: time.Now(),
+	}
+}
+
+func (dto UpdateEnterpriseByCNPJDTO) UpdateToModel() model.AdminEnterprise {
+	return model.AdminEnterprise{
+		Nome:      dto.Nome,
+		Cnpj:      dto.NewCNPJ,
+		UpdatedAt: time.Now(),
 	}
 }
