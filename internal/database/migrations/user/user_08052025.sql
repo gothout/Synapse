@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS admin_user (
     token TEXT,
     rule_id INTEGER REFERENCES admin_rule(id) ON DELETE SET NULL,
     enterprise_id INTEGER REFERENCES admin_enterprise(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 🔐 Tokens de sessão
