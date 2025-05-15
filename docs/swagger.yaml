@@ -9,6 +9,11 @@ definitions:
     - cnpj
     - nome
     type: object
+  enterprise.EnterpriseDeletedResponseDTO:
+    properties:
+      cnpj:
+        type: string
+    type: object
   enterprise.EnterpriseResponseDTO:
     properties:
       cnpj:
@@ -87,6 +92,49 @@ definitions:
       namespace:
         type: string
     type: object
+  user.AdminUserCreateDTO:
+    properties:
+      email:
+        type: string
+      enterprise_id:
+        type: integer
+      nome:
+        minLength: 3
+        type: string
+      numero:
+        type: string
+      rule_id:
+        type: integer
+      senha:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - enterprise_id
+    - nome
+    - numero
+    - rule_id
+    - senha
+    type: object
+  user.UserResponseDTO:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      enterprise_id:
+        type: integer
+      id:
+        type: integer
+      nome:
+        type: string
+      numero:
+        type: string
+      rule_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -151,6 +199,33 @@ paths:
       tags:
       - v1 - Empresa
   /admin/v1/enterprise/cnpj/{cnpj}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove uma empresa com base no CNPJ fornecido.
+      parameters:
+      - in: path
+        name: cnpj
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/enterprise.EnterpriseDeletedResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Deletar empresa por CNPJ
+      tags:
+      - v1 - Empresa
     get:
       consumes:
       - application/json
@@ -362,4 +437,34 @@ paths:
       summary: Buscar permissões da regra
       tags:
       - v1 - Regra
+  /admin/v1/user:
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo usuário no sistema
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.AdminUserCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.UserResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Criar usuário
+      tags:
+      - v1 - Usuário
 swagger: "2.0"

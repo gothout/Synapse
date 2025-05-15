@@ -281,3 +281,49 @@ func (ec *EnterpriseController) UpdateByCNPJ(ctx *gin.Context) {
 	// Retorno mais limpo (nome, cnpj e update_at)
 	ctx.JSON(http.StatusOK, dto.FromModelUpdateResponse(*updated))
 }
+
+// DeleteByCNPJ godoc
+// @Summary      Deletar empresa por CNPJ
+// @Description  Remove uma empresa com base no CNPJ fornecido.
+// @Tags         v1 - Empresa
+// @Accept       json
+// @Produce      json
+// @Param        request  path  dto.DeleteEnterpriseByCNPJDTO  true  "CNPJ para exclusão"
+// @Success      200   {object}  dto.EnterpriseDeletedResponseDTO
+// @Failure      400   {object}  rest_err.RestErr
+// @Failure      404   {object}  rest_err.RestErr
+// @Router       /admin/v1/enterprise/cnpj/{cnpj} [delete]
+func (ec *EnterpriseController) DeleteByCNPJ(ctx *gin.Context) {
+	var req dto.DeleteEnterpriseByCNPJDTO
+
+	// Bind do CNPJ da URI
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("CNPJ ausente ou inválido na URL", []rest_err.Causes{
+			rest_err.NewCause("uri", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Validação personalizada
+	if err := binding.ValidateDeleteEnterpriseByCNPJDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação no CNPJ", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Executa exclusão no service
+	deletedCNPJ, err := ec.service.DeleteByCNPJ(req.Cnpj)
+	if err != nil {
+		restErr := rest_err.NewInternalServerError("Erro ao deletar empresa", []rest_err.Causes{
+			rest_err.NewCause("repository", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Retorno de confirmação
+	ctx.JSON(http.StatusOK, dto.EnterpriseDeletedResponseDTO{Cnpj: deletedCNPJ})
+}

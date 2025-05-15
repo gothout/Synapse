@@ -31,6 +31,10 @@ type UpdateEnterpriseByCNPJDTO struct {
 	NewCNPJ string `json:"cnpj"`                   // novo CNPJ opcional
 }
 
+type DeleteEnterpriseByCNPJDTO struct {
+	Cnpj string `uri:"cnpj" binding:"required"`
+}
+
 func (dto CreateEnterpriseDTO) ToModel() model.AdminEnterprise {
 	return model.AdminEnterprise{
 		Nome:      dto.Nome,

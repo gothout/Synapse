@@ -18,6 +18,9 @@ type EnterpriseUpdatedResponseDTO struct {
 	Cnpj      string    `json:"cnpj"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+type EnterpriseDeletedResponseDTO struct {
+	Cnpj string `json:"cnpj"`
+}
 
 // FromModel converte um model.AdminEnterprise para um EnterpriseResponseDTO.
 func FromModel(ent model.AdminEnterprise) EnterpriseResponseDTO {

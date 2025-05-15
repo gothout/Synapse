@@ -195,6 +195,33 @@ func (r *repository) UpdateByCNPJ(cnpj, newCNPJ string, updated *enterprise.Admi
 	return updated, nil
 }
 
+// DeleteByCNPJ remove uma empresa com base no CNPJ fornecido.
+// Retorna o CNPJ excluído, ou erro se não encontrada ou falha no banco.
+func (r *repository) DeleteByCNPJ(cnpj string) (string, error) {
+	ctx := context.Background()
+
+	// Primeiro verifica se a empresa existe
+	var existingID int64
+	checkQuery := `SELECT id FROM admin_enterprise WHERE cnpj = $1`
+	err := r.db.QueryRow(ctx, checkQuery, cnpj).Scan(&existingID)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", fmt.Errorf("empresa com CNPJ fornecido não encontrada")
+		}
+		return "", fmt.Errorf("erro ao verificar existência da empresa: %w", err)
+	}
+
+	// Executa a exclusão
+	deleteQuery := `DELETE FROM admin_enterprise WHERE cnpj = $1`
+	_, err = r.db.Exec(ctx, deleteQuery, cnpj)
+	if err != nil {
+		return "", fmt.Errorf("erro ao excluir empresa: %w", err)
+	}
+
+	return cnpj, nil
+}
+
+// Helper
 func checkDuplicateCNPJ(r *repository, cnpj string) error {
 	checkQuery := `SELECT id FROM admin_enterprise WHERE cnpj = $1`
 	var existingID int64

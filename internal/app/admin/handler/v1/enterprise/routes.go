@@ -24,5 +24,6 @@ func RegisterEnterpriseRoutes(router *gin.RouterGroup) {
 		group.GET("/nome/:nome", ctrl.ReadByNome)
 		group.GET("/id/:id", ctrl.ReadByID)
 		group.PUT("/cnpj/:cnpj", ctrl.UpdateByCNPJ)
+		group.DELETE("/cnpj/:cnpj", ctrl.DeleteByCNPJ)
 	}
 }
