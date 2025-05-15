@@ -8,7 +8,6 @@ type AdminUserCreateDTO struct {
 	Email        string `json:"email" binding:"required,email"`
 	Senha        string `json:"senha" binding:"required,min=6"`
 	Numero       string `json:"numero" binding:"required"`
-	Token        string `json:"token" binding:"required"`
 	RuleID       int64  `json:"rule_id" binding:"required"`
 	EnterpriseID int64  `json:"enterprise_id" binding:"required"`
 }
@@ -20,7 +19,6 @@ func (dto AdminUserCreateDTO) ToModel() model.User {
 		Email:        dto.Email,
 		Senha:        dto.Senha,
 		Numero:       dto.Numero,
-		Token:        dto.Token,
 		RuleID:       dto.RuleID,
 		EnterpriseID: dto.EnterpriseID,
 	}
