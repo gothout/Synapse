@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+// AdminUserTokenDTO representa a estrutura de entrada para efetuar login.
+type AdminUserTokenDTO struct {
+	Email string `json:"email" binding:"required,email"`
+	Senha string `json:"senha" binding:"required,min=6"`
+}
+
 // AdminUserCreateDTO representa a estrutura de entrada para criar novo usuario.
 type AdminUserCreateDTO struct {
 	Nome         string `json:"nome" binding:"required,min=3"`

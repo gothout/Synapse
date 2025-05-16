@@ -1,10 +1,12 @@
 package user
 
 import (
+	"Synapse/internal/app/admin/pkg/security"
 	user "Synapse/internal/app/admin/user/model"
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -243,4 +245,72 @@ func (r *repository) DeleteUserByID(userID int64) error {
 	}
 
 	return nil
+}
+
+// Autenticação
+func (r *repository) ValidateCredentials(ctx context.Context, email, senha string) (*user.User, error) {
+	var user user.User
+
+	query := `SELECT id, nome, email, senha, numero, rule_id, enterprise_id FROM admin_user WHERE email = $1`
+	err := r.db.QueryRow(ctx, query, email).Scan(
+		&user.ID,
+		&user.Nome,
+		&user.Email,
+		&user.Senha,
+		&user.Numero,
+		&user.RuleID,
+		&user.EnterpriseID,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if !security.CheckPasswordHash(senha, user.Senha) {
+		return nil, fmt.Errorf("senha inválida")
+	}
+
+	return &user, nil
+}
+
+// Salvar token
+func (r *repository) SaveToken(ctx context.Context, userID int64, token string, expireAt time.Time) error {
+	var count int
+
+	// Verifica se já existe um token válido
+	queryCheck := `
+		SELECT COUNT(*) FROM admin_token
+		WHERE user_id = $1 AND expires_at > CURRENT_TIMESTAMP
+	`
+	err := r.db.QueryRow(ctx, queryCheck, userID).Scan(&count)
+	if err != nil {
+		return fmt.Errorf("erro ao verificar token existente: %w", err)
+	}
+
+	// Se já existe token válido, não cria novo
+	if count > 0 {
+		return nil
+	}
+
+	// Insere novo token com expireAt vindo do JWT
+	queryInsert := `
+		INSERT INTO admin_token (token, user_id, created_at, expires_at)
+		VALUES ($1, $2, CURRENT_TIMESTAMP, $3)
+	`
+	_, err = r.db.Exec(ctx, queryInsert, token, userID, expireAt.UTC()) // força UTC
+	if err != nil {
+		return fmt.Errorf("erro ao inserir novo token: %w", err)
+	}
+
+	return nil
+}
+
+// Valida um token se esta valido ou expirado.
+func (r *repository) GetValidToken(ctx context.Context, userID int64) (string, error) {
+	var token string
+	query := `SELECT token FROM admin_token WHERE user_id = $1 AND expires_at > CURRENT_TIMESTAMP LIMIT 1`
+	err := r.db.QueryRow(ctx, query, userID).Scan(&token)
+	if err != nil {
+		return "", nil // Nenhum token válido
+	}
+	return token, nil
 }

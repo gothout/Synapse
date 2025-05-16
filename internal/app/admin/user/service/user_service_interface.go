@@ -8,6 +8,8 @@ type Service interface {
 	ReadByEmail(email string) (*user.User, error)
 	UpdateUserByID(UserID int64, updated *user.User) (*user.User, error)
 	DeleteUserByID(UserID int64) error
+	CreateTokenUser(email string, senha string) (*user.User, string, error)
+
 	//Read()
 	//Update()
 	//Delete()

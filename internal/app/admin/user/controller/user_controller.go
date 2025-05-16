@@ -282,3 +282,48 @@ func (uc *UserController) Delete(ctx *gin.Context) {
 
 	ctx.Status(http.StatusNoContent)
 }
+
+// Token godoc
+// @Summary      Gerar token JWT
+// @Description  Gera um token JWT válido com base nas credenciais do usuário
+// @Tags         v1 - Usuário
+// @Accept       json
+// @Produce      json
+// @Param        request  body      dto.AdminUserTokenDTO  true  "Credenciais de acesso"
+// @Success      200      {object}  dto.AdminUserTokenResponseDTO
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure      401      {object}  rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /admin/v1/user/token [post]
+func (uc *UserController) Token(ctx *gin.Context) {
+	var req dto.AdminUserTokenDTO
+
+	// Bind JSON
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Campos obrigatórios ausentes ou inválidos", []rest_err.Causes{
+			rest_err.NewCause("body", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Validação manual
+	if err := binding.ValidateAdminUserLoginDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação no payload", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Geração do token
+	user, token, err := uc.service.CreateTokenUser(req.Email, req.Senha)
+	if err != nil {
+		restErr := rest_err.NewForbiddenError("Credenciais inválidas")
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Retorno com dados do usuário + token
+	ctx.JSON(http.StatusOK, dto.FromModelToken(*user, token))
+}
