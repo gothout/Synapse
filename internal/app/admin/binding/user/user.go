@@ -94,3 +94,16 @@ func ValidateAdminUserDeleteDTO(input dto.AdminDeleteIDUserDTO) error {
 	}
 	return nil
 }
+
+// ValidateAdminUserLoginDTO valida o DTO de login de usuario
+func ValidateAdminUserLoginDTO(input dto.AdminUserTokenDTO) error {
+	if strings.TrimSpace(input.Email) == "" || !validators.IsEmailValid(input.Email) {
+		return errors.New("email invalido ou ausente")
+	}
+
+	if strings.TrimSpace(input.Senha) == "" || len(input.Senha) < 6 {
+		return errors.New("senha invalida ou ausente")
+	}
+
+	return nil
+}

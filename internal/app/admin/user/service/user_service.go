@@ -6,6 +6,7 @@ import (
 	ruleRepo "Synapse/internal/app/admin/rule/repository"
 	userModel "Synapse/internal/app/admin/user/model"
 	userRepo "Synapse/internal/app/admin/user/repository"
+	"context"
 	"fmt"
 	"strings"
 )
@@ -139,4 +140,37 @@ func (s *service) UpdateUserByID(userID int64, updated *userModel.User) (*userMo
 
 func (s *service) DeleteUserByID(userID int64) error {
 	return s.userRepo.DeleteUserByID(userID)
+}
+
+// 🔐 Autentica e gera token JWT
+func (s *service) CreateTokenUser(email string, senha string) (*userModel.User, string, error) {
+	ctx := context.Background()
+
+	user, err := s.userRepo.ValidateCredentials(ctx, email, senha)
+	if err != nil {
+		return nil, "", fmt.Errorf("credenciais inválidas: %w", err)
+	}
+
+	// Verifica token válido antes de gerar
+	existingToken, err := s.userRepo.GetValidToken(ctx, user.ID)
+	if err != nil {
+		return nil, "", fmt.Errorf("erro ao verificar token existente: %w", err)
+	}
+	if existingToken != "" {
+		return user, existingToken, nil
+	}
+
+	// Se não existe, gera e salva novo
+	tokenData, err := security.GenerateToken(user.ID)
+	if err != nil {
+		return nil, "", fmt.Errorf("erro ao gerar token: %w", err)
+	}
+
+	// ✅ Agora passando também o tokenData.ExpiresAt
+	err = s.userRepo.SaveToken(ctx, user.ID, tokenData.Token, tokenData.ExpiresAt)
+	if err != nil {
+		return nil, "", fmt.Errorf("erro ao salvar token no banco: %w", err)
+	}
+
+	return user, tokenData.Token, nil
 }
