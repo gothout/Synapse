@@ -6,6 +6,7 @@ type Service interface {
 	Create(user *user.User) (*user.User, error)
 	ReadAllUser(enterpriseId, page int64) (*[]user.User, error)
 	ReadByEmail(email string) (*user.User, error)
+	UpdateUserByID(UserID int64, updated *user.User) (*user.User, error)
 	//Read()
 	//Update()
 	//Delete()

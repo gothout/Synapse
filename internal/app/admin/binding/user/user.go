@@ -68,3 +68,21 @@ func ValidateAdminUserReadByEmailDTO(input dto.AdminUserReadByEmailDTO) error {
 	}
 	return nil
 }
+
+// ValidateAdminUserUpdateDTO valida os dados recebidos para atualização de um usuário.
+func ValidateAdminUserUpdateDTO(input dto.AdminUserUpdatedDTO) error {
+
+	if input.Nome != "" && len(strings.TrimSpace(input.Nome)) < 3 {
+		return errors.New("caso informado, o nome deve ter ao menos 3 caracteres")
+	}
+
+	if input.Senha != "" && len(strings.TrimSpace(input.Senha)) < 6 {
+		return errors.New("caso informado, a senha deve ter ao menos 6 caracteres")
+	}
+
+	if input.Email != "" && !validators.IsEmailValid(input.Email) {
+		return errors.New("caso informado, o e-mail é inválido")
+	}
+
+	return nil
+}

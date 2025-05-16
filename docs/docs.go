@@ -609,6 +609,65 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/admin/v1/user/{id}": {
+            "put": {
+                "description": "Atualiza os dados de um usuário com base no ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Usuário"
+                ],
+                "summary": "Atualizar usuário",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do usuário para atualização",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.AdminUserUpdatedDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -764,6 +823,34 @@ const docTemplate = `{
                 "numero",
                 "rule_id",
                 "senha"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "enterprise_id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string",
+                    "minLength": 3
+                },
+                "numero": {
+                    "type": "string"
+                },
+                "rule_id": {
+                    "type": "integer"
+                },
+                "senha": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "user.AdminUserUpdatedDTO": {
+            "type": "object",
+            "required": [
+                "enterprise_id"
             ],
             "properties": {
                 "email": {
