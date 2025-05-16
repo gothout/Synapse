@@ -5,6 +5,7 @@ import (
 	dto "Synapse/internal/app/admin/user/dto"
 	userService "Synapse/internal/app/admin/user/service"
 	"Synapse/internal/configuration/rest_err"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -164,4 +165,70 @@ func (uc *UserController) ReadByEmail(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, dto.FromModel(*user))
+}
+
+// Update godoc
+// @Summary      Atualizar usuário
+// @Description  Atualiza os dados de um usuário com base no ID
+// @Tags         v1 - Usuário
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                     true  "ID do usuário"
+// @Param        request  body      dto.AdminUserUpdatedDTO  true  "Dados do usuário para atualização"
+// @Success      200      {object}  dto.UserResponseDTO
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure      404      {object}  rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /admin/v1/user/{id} [put]
+func (uc *UserController) Update(ctx *gin.Context) {
+	// Extrai o ID da URL
+	idParam := ctx.Param("id")
+	userID, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil || userID <= 0 {
+		restErr := rest_err.NewBadRequestValidationError("ID do usuário inválido", []rest_err.Causes{
+			rest_err.NewCause("id", "ID deve ser um número inteiro válido"),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Bind do JSON
+	var req dto.AdminUserUpdatedDTO
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Campos obrigatórios ausentes ou inválidos", []rest_err.Causes{
+			rest_err.NewCause("body", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Validação manual
+	if err := binding.ValidateAdminUserUpdateDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação nos dados do usuário", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Converte DTO para model
+	updatedUser := req.ToModelUpdated()
+
+	// Chamada do service
+	user, err := uc.service.UpdateUserByID(userID, &updatedUser)
+	if err != nil {
+		if err.Error() == fmt.Sprintf("usuário com ID %d não encontrado", userID) {
+			restErr := rest_err.NewNotFoundError("Usuário não encontrado")
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+		restErr := rest_err.NewInternalServerError("Erro ao atualizar usuário", []rest_err.Causes{
+			rest_err.NewCause("update", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Retorno formatado
+	ctx.JSON(http.StatusOK, dto.FromModelUpdated(*user))
 }

@@ -116,6 +116,25 @@ definitions:
     - rule_id
     - senha
     type: object
+  user.AdminUserUpdatedDTO:
+    properties:
+      email:
+        type: string
+      enterprise_id:
+        type: integer
+      nome:
+        minLength: 3
+        type: string
+      numero:
+        type: string
+      rule_id:
+        type: integer
+      senha:
+        minLength: 6
+        type: string
+    required:
+    - enterprise_id
+    type: object
   user.UserResponseDTO:
     properties:
       created_at:
@@ -501,6 +520,45 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Listar usuários por empresa
+      tags:
+      - v1 - Usuário
+  /admin/v1/user/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Atualiza os dados de um usuário com base no ID
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do usuário para atualização
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.AdminUserUpdatedDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Atualizar usuário
       tags:
       - v1 - Usuário
   /admin/v1/user/email/{email}:

@@ -7,6 +7,7 @@ import (
 	userModel "Synapse/internal/app/admin/user/model"
 	userRepo "Synapse/internal/app/admin/user/repository"
 	"fmt"
+	"strings"
 )
 
 // service implementa a interface Service
@@ -70,4 +71,68 @@ func (s *service) ReadByEmail(email string) (*userModel.User, error) {
 		return nil, fmt.Errorf("usuário com e-mail não encontrado")
 	}
 	return user, nil
+}
+
+// UpdateUserByID atualiza os dados de um usuário com base no ID
+func (s *service) UpdateUserByID(userID int64, updated *userModel.User) (*userModel.User, error) {
+	existingUser, err := s.userRepo.ReadByID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("usuário com ID %d não encontrado", userID)
+	}
+
+	// --- EMAIL ---
+	email := strings.TrimSpace(updated.Email)
+	if email != "" && email != existingUser.Email {
+		userWithEmail, err := s.userRepo.ReadByEmail(email)
+		if err == nil && userWithEmail.ID != userID {
+			return nil, fmt.Errorf("o e-mail informado já está em uso por outro usuário")
+		}
+		existingUser.Email = email
+	}
+
+	// --- NOME ---
+	nome := strings.TrimSpace(updated.Nome)
+	if nome != "" && nome != existingUser.Nome {
+		existingUser.Nome = nome
+	}
+
+	// --- NÚMERO ---
+	numero := strings.TrimSpace(updated.Numero)
+	if numero != "" && numero != existingUser.Numero {
+		existingUser.Numero = numero
+	}
+
+	// --- RULE_ID ---
+	if updated.RuleID != 0 && updated.RuleID != existingUser.RuleID {
+		_, err := s.ruleRepo.FindRuleByID(updated.RuleID)
+		if err != nil {
+			return nil, fmt.Errorf("regra com ID %d não encontrada", updated.RuleID)
+		}
+		existingUser.RuleID = updated.RuleID
+	}
+
+	// --- ENTERPRISE_ID ---
+	if updated.EnterpriseID != 0 && updated.EnterpriseID != existingUser.EnterpriseID {
+		_, err := s.enterpriseRepo.ReadByID(updated.EnterpriseID)
+		if err != nil {
+			return nil, fmt.Errorf("empresa com ID %d não encontrada", updated.EnterpriseID)
+		}
+		existingUser.EnterpriseID = updated.EnterpriseID
+	}
+
+	// --- SENHA ---
+	senha := strings.TrimSpace(updated.Senha)
+	if senha != "" {
+		if err := security.ComparePassword(existingUser.Senha, senha); err != nil {
+			// Senha é diferente da atual, então criptografa e atualiza
+			hashed, err := security.HashPassword(senha)
+			if err != nil {
+				return nil, fmt.Errorf("erro ao criptografar senha")
+			}
+			existingUser.Senha = hashed
+		}
+	}
+
+	// Atualiza no banco
+	return s.userRepo.UpdateUserByID(userID, existingUser)
 }
