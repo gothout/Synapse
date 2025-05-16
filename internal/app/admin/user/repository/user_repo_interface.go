@@ -10,4 +10,8 @@ type Repository interface {
 	ReadByEmail(email string) (*user.User, error)
 	ReadByID(userID int64) (*user.User, error)
 	UpdateUserByID(UserID int64, updated *user.User) (*user.User, error)
+	DeleteUserByID(UserID int64) error
+	//Read()
+	//Update()
+	//Delete()
 }

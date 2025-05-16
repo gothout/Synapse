@@ -123,17 +123,13 @@ definitions:
       enterprise_id:
         type: integer
       nome:
-        minLength: 3
         type: string
       numero:
         type: string
       rule_id:
         type: integer
       senha:
-        minLength: 6
         type: string
-    required:
-    - enterprise_id
     type: object
   user.UserResponseDTO:
     properties:
@@ -523,6 +519,36 @@ paths:
       tags:
       - v1 - Usuário
   /admin/v1/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove um usuário com base no ID fornecido
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Nenhum conteúdo
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Deletar usuário
+      tags:
+      - v1 - Usuário
     put:
       consumes:
       - application/json

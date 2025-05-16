@@ -667,6 +667,51 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Remove um usuário com base no ID fornecido",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Usuário"
+                ],
+                "summary": "Deletar usuário",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do usuário",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Nenhum conteúdo"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
             }
         }
     },
@@ -849,9 +894,6 @@ const docTemplate = `{
         },
         "user.AdminUserUpdatedDTO": {
             "type": "object",
-            "required": [
-                "enterprise_id"
-            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -860,8 +902,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "nome": {
-                    "type": "string",
-                    "minLength": 3
+                    "type": "string"
                 },
                 "numero": {
                     "type": "string"
@@ -870,8 +911,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "senha": {
-                    "type": "string",
-                    "minLength": 6
+                    "type": "string"
                 }
             }
         },

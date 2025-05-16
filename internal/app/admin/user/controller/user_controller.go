@@ -232,3 +232,53 @@ func (uc *UserController) Update(ctx *gin.Context) {
 	// Retorno formatado
 	ctx.JSON(http.StatusOK, dto.FromModelUpdated(*user))
 }
+
+// Delete godoc
+// @Summary      Deletar usuário
+// @Description  Remove um usuário com base no ID fornecido
+// @Tags         v1 - Usuário
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "ID do usuário"
+// @Success      204  "Nenhum conteúdo"
+// @Failure      400  {object}  rest_err.RestErr
+// @Failure      404  {object}  rest_err.RestErr
+// @Failure      500  {object}  rest_err.RestErr
+// @Router       /admin/v1/user/{id} [delete]
+func (uc *UserController) Delete(ctx *gin.Context) {
+	var uri dto.AdminDeleteIDUserDTO
+
+	// Bind do ID da URI
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("ID do usuário inválido na URI", []rest_err.Causes{
+			rest_err.NewCause("uri", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Validação do ID
+	if err := binding.ValidateAdminUserDeleteDTO(uri); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação no ID do usuário", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Execução da deleção
+	if err := uc.service.DeleteUserByID(uri.UserID); err != nil {
+		if err.Error() == fmt.Sprintf("nenhum usuário encontrado com ID %d", uri.UserID) {
+			restErr := rest_err.NewNotFoundError("Usuário não encontrado")
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+		restErr := rest_err.NewInternalServerError("Erro ao deletar usuário", []rest_err.Causes{
+			rest_err.NewCause("delete", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+}
