@@ -20,3 +20,11 @@ func GetHostServer() string {
 	}
 	return os.Getenv("HOST")
 }
+
+func GetSecretKey() string {
+	secret := os.Getenv("SECRET_KEY")
+	if secret == "" {
+		log.Fatal("SECRET_KEY not set")
+	}
+	return secret
+}

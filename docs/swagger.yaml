@@ -116,6 +116,34 @@ definitions:
     - rule_id
     - senha
     type: object
+  user.AdminUserTokenDTO:
+    properties:
+      email:
+        type: string
+      senha:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - senha
+    type: object
+  user.AdminUserTokenResponseDTO:
+    properties:
+      email:
+        type: string
+      enterprise_id:
+        type: integer
+      id:
+        type: integer
+      nome:
+        type: string
+      numero:
+        type: string
+      rule_id:
+        type: integer
+      token:
+        type: string
+    type: object
   user.AdminUserUpdatedDTO:
     properties:
       email:
@@ -614,6 +642,40 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Buscar usuário por e-mail
+      tags:
+      - v1 - Usuário
+  /admin/v1/user/token:
+    post:
+      consumes:
+      - application/json
+      description: Gera um token JWT válido com base nas credenciais do usuário
+      parameters:
+      - description: Credenciais de acesso
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.AdminUserTokenDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.AdminUserTokenResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Gerar token JWT
       tags:
       - v1 - Usuário
 swagger: "2.0"

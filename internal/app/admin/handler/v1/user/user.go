@@ -32,6 +32,7 @@ func RegisterUserRoutes(router *gin.RouterGroup) {
 	group := router.Group("/user")
 	{
 		group.POST("/", ctrl.Create)
+		group.POST("/token", ctrl.Token)
 		group.GET("/:enterprise_id", ctrl.ReadAll)
 		group.GET("/email/:email", ctrl.ReadByEmail)
 		group.PUT("/:id", ctrl.Update)

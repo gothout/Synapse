@@ -7,7 +7,7 @@ import (
 )
 
 func Configuration() {
-	fmt.Println("\nIniciando variaveis de ambiente.\n")
+	fmt.Println("\nIniciando variaveis de ambiente.")
 	LoadEnv()
 	// Verificando ENV
 	Env := os.Getenv("ENV")
@@ -42,7 +42,8 @@ func InitEnvsDev() {
 
 	fmt.Println("Iniciando Envs de log")
 	fmt.Println("Env de log sistematica: ", GetLog())
-
+	// Buscando secretkey sem logar.
+	GetSecretKey()
 }
 
 func InitEnvProd() {
@@ -60,5 +61,7 @@ func InitEnvProd() {
 
 	fmt.Println("Iniciando Envs de log")
 	fmt.Println("Env de log sistematica: ", GetLog())
+	// Buscando secretkey sem logar.
+	GetSecretKey()
 
 }

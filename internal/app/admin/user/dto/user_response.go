@@ -2,6 +2,17 @@ package user
 
 import model "Synapse/internal/app/admin/user/model"
 
+// AdminUserTokenResponseDTO representa o retorno de login
+type AdminUserTokenResponseDTO struct {
+	ID           int64  `json:"id"`
+	Nome         string `json:"nome"`
+	Email        string `json:"email"`
+	Numero       string `json:"numero"`
+	EnterpriseID int64  `json:"enterprise_id"`
+	RuleID       int64  `json:"rule_id"`
+	Token        string `json:"token"`
+}
+
 // UserResponseDTO representa os dados retornados de um usuário
 type UserResponseDTO struct {
 	ID           int64  `json:"id"`
@@ -38,6 +49,18 @@ func FromModelUpdated(u model.User) UserResponseDTO {
 		RuleID:       u.RuleID,
 		EnterpriseID: u.EnterpriseID,
 		UpdatedAt:    u.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}
+}
+
+func FromModelToken(user model.User, token string) AdminUserTokenResponseDTO {
+	return AdminUserTokenResponseDTO{
+		ID:           user.ID,
+		Nome:         user.Nome,
+		Email:        user.Email,
+		Numero:       user.Numero,
+		EnterpriseID: user.EnterpriseID,
+		RuleID:       user.RuleID,
+		Token:        token,
 	}
 }
 
