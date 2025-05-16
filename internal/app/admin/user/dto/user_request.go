@@ -12,6 +12,19 @@ type AdminUserCreateDTO struct {
 	EnterpriseID int64  `json:"enterprise_id" binding:"required"`
 }
 
+// AdminUserReadAllDTO representa o enterprise ID para validação.
+type AdminUserReadAllURI struct {
+	EnterpriseID int64 `uri:"enterprise_id" binding:"required"`
+}
+type AdminUserReadAllQuery struct {
+	Page string `form:"page" binding:"required"`
+}
+
+// AdminUserReadByEmailDTO representa o email para validação.
+type AdminUserReadByEmailDTO struct {
+	Email string `uri:"email" binding:"required"`
+}
+
 // ToModel converte um DTO de criação para um model.Admin
 func (dto AdminUserCreateDTO) ToModel() model.User {
 	return model.User{

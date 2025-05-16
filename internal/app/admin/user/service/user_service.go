@@ -51,3 +51,23 @@ func (s *service) Create(user *userModel.User) (*userModel.User, error) {
 	// Cria o usuário
 	return s.userRepo.Create(user)
 }
+
+// ReadAllUser retorna todos os usuários de uma empresa com paginação.
+func (s *service) ReadAllUser(enterpriseID int64, page int64) (*[]userModel.User, error) {
+	// Opcional: validar se a empresa existe antes de listar
+	_, err := s.enterpriseRepo.ReadByID(enterpriseID)
+	if err != nil {
+		return nil, fmt.Errorf("empresa com ID não encontrada")
+	}
+
+	return s.userRepo.ReadAllUser(enterpriseID, page)
+}
+
+// ReadByEmail retorna um usuário com base no e-mail.
+func (s *service) ReadByEmail(email string) (*userModel.User, error) {
+	user, err := s.userRepo.ReadByEmail(email)
+	if err != nil {
+		return nil, fmt.Errorf("usuário com e-mail não encontrado")
+	}
+	return user, nil
+}
