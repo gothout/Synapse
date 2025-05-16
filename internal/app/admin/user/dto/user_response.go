@@ -28,6 +28,19 @@ func FromModel(u model.User) UserResponseDTO {
 	}
 }
 
+// FromModel updated converte um model.User para DTO de response.
+func FromModelUpdated(u model.User) UserResponseDTO {
+	return UserResponseDTO{
+		ID:           u.ID,
+		Nome:         u.Nome,
+		Email:        u.Email,
+		Numero:       u.Numero,
+		RuleID:       u.RuleID,
+		EnterpriseID: u.EnterpriseID,
+		UpdatedAt:    u.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}
+}
+
 // FromModelList converte uma lista de usuários para uma lista de DTOs
 func FromModelList(users []model.User) []UserResponseDTO {
 	response := make([]UserResponseDTO, 0, len(users))

@@ -130,3 +130,98 @@ func (r *repository) ReadByEmail(email string) (*user.User, error) {
 
 	return &u, nil
 }
+
+// ReadByID retorna um usuário com base no ID.
+func (r *repository) ReadByID(userID int64) (*user.User, error) {
+	ctx := context.Background()
+
+	query := `
+		SELECT id, nome, email, senha, numero, token, rule_id, enterprise_id, created_at, updated_at
+		FROM admin_user
+		WHERE id = $1
+	`
+
+	var u user.User
+	err := r.db.QueryRow(ctx, query, userID).Scan(
+		&u.ID,
+		&u.Nome,
+		&u.Email,
+		&u.Senha,
+		&u.Numero,
+		&u.Token,
+		&u.RuleID,
+		&u.EnterpriseID,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+	)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("usuário com ID %d não encontrado", userID)
+		}
+		return nil, fmt.Errorf("erro ao buscar usuário por ID: %w", err)
+	}
+
+	return &u, nil
+}
+
+// Atualiza usuario por ID por ID
+func (r *repository) UpdateUserByID(userID int64, updated *user.User) (*user.User, error) {
+	ctx := context.Background()
+
+	// Verifica se o usuário existe
+	queryCheck := `SELECT id FROM admin_user WHERE id = $1`
+	var existingID int64
+	err := r.db.QueryRow(ctx, queryCheck, userID).Scan(&existingID)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("usuário com ID %d não encontrado", userID)
+		}
+		return nil, fmt.Errorf("erro ao verificar existência do usuário: %w", err)
+	}
+
+	// Se a senha vier vazia, busca a atual para manter
+	if updated.Senha == "" {
+		querySenha := `SELECT senha FROM admin_user WHERE id = $1`
+		err := r.db.QueryRow(ctx, querySenha, userID).Scan(&updated.Senha)
+		if err != nil {
+			return nil, fmt.Errorf("erro ao obter senha atual: %w", err)
+		}
+	}
+
+	// Atualiza os campos, incluindo enterprise_id
+	queryUpdate := `
+		UPDATE admin_user 
+		SET nome = $1, email = $2, senha = $3, numero = $4, rule_id = $5, enterprise_id = $6, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $7
+		RETURNING id, nome, email, senha, numero, token, rule_id, enterprise_id, created_at, updated_at
+	`
+
+	row := r.db.QueryRow(ctx, queryUpdate,
+		updated.Nome,
+		updated.Email,
+		updated.Senha,
+		updated.Numero,
+		updated.RuleID,
+		updated.EnterpriseID,
+		userID,
+	)
+
+	var updatedUser user.User
+	err = row.Scan(
+		&updatedUser.ID,
+		&updatedUser.Nome,
+		&updatedUser.Email,
+		&updatedUser.Senha,
+		&updatedUser.Numero,
+		&updatedUser.Token,
+		&updatedUser.RuleID,
+		&updatedUser.EnterpriseID,
+		&updatedUser.CreatedAt,
+		&updatedUser.UpdatedAt,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao atualizar usuário: %w", err)
+	}
+
+	return &updatedUser, nil
+}
