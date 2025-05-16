@@ -46,3 +46,25 @@ func ValidateAdminUserCreateDTO(input dto.AdminUserCreateDTO) error {
 
 	return nil
 }
+
+// ValidateAdminUserReadAllDTO valida o DTO de listagem paginada de usuários por empresa.
+func ValidateAdminUserReadAllDTO(enterpriseID int64, page string) error {
+	if enterpriseID <= 0 {
+		return errors.New("enterprise_id inválido ou ausente na URI")
+	}
+	if strings.TrimSpace(page) == "" || page == "0" {
+		return errors.New("page deve ser um número maior que zero")
+	}
+	return nil
+}
+
+// ValidateAdminUserReadByEmailDTO valida o DTO de busca de usuário por e-mail.
+func ValidateAdminUserReadByEmailDTO(input dto.AdminUserReadByEmailDTO) error {
+	if strings.TrimSpace(input.Email) == "" {
+		return errors.New("e-mail ausente na URI")
+	}
+	if !validators.IsEmailValid(input.Email) {
+		return errors.New("e-mail inválido")
+	}
+	return nil
+}
