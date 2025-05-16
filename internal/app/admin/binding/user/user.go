@@ -86,3 +86,11 @@ func ValidateAdminUserUpdateDTO(input dto.AdminUserUpdatedDTO) error {
 
 	return nil
 }
+
+// ValidateAdminUserDeleteDTO valida o DTO de exclusão de usuário por ID.
+func ValidateAdminUserDeleteDTO(input dto.AdminDeleteIDUserDTO) error {
+	if input.UserID <= 0 {
+		return errors.New("user_id inválido ou ausente na URI")
+	}
+	return nil
+}

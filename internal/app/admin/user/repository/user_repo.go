@@ -225,3 +225,22 @@ func (r *repository) UpdateUserByID(userID int64, updated *user.User) (*user.Use
 
 	return &updatedUser, nil
 }
+
+// DeleteUserByID remove um usuário com base no ID.
+func (r *repository) DeleteUserByID(userID int64) error {
+	ctx := context.Background()
+
+	query := `DELETE FROM admin_user WHERE id = $1`
+
+	commandTag, err := r.db.Exec(ctx, query, userID)
+	if err != nil {
+		return fmt.Errorf("erro ao deletar usuário")
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("erro ao deletar usuário")
+		//return fmt.Errorf("nenhum usuário encontrado")
+	}
+
+	return nil
+}

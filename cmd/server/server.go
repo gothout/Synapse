@@ -2,6 +2,7 @@ package server
 
 import (
 	"log"
+	"os"
 
 	adminHandler "Synapse/internal/app/admin/handler"
 
@@ -11,7 +12,12 @@ import (
 // InitServer configura e retorna o router do Gin já com as rotas registradas.
 func InitServer() *gin.Engine {
 	router := gin.Default()
-
+	Env := os.Getenv("ENV")
+	if Env == "DEV" {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	// Aqui registramos todos os domínios, cada um resolve suas dependências
 	adminHandler.RegisterAdminRoutes(router)
 
