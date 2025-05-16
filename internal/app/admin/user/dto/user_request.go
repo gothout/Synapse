@@ -30,6 +30,11 @@ type AdminUpdatedUserDTO struct {
 	UserID int64 `uri:"id" binding:"required"`
 }
 
+// AdminUpdatedUserDTO representa o userID para atualizar.
+type AdminDeleteIDUserDTO struct {
+	UserID int64 `uri:"id" binding:"required"`
+}
+
 // AdminUserReadAllDTO representa o enterprise ID para validação.
 type AdminUserReadAllURI struct {
 	EnterpriseID int64 `uri:"enterprise_id" binding:"required"`

@@ -1,0 +1,6 @@
+2025/05/16 14:27:41 C:/Users/NB-LCHAVES/Documents/Desenvolvimento/projetos/Synapse/internal/configuration/logger/log_print/log.go:50: [INFO] ✅ PostgreSQL versão: PostgreSQL 17.4 on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+2025/05/16 14:27:41 C:/Users/NB-LCHAVES/Documents/Desenvolvimento/projetos/Synapse/internal/configuration/logger/log_print/log.go:50: [INFO] Banco de dados OK!
+2025/05/16 14:27:41 C:/Users/NB-LCHAVES/Documents/Desenvolvimento/projetos/Synapse/cmd/server/server.go:30: 🚀 Servidor iniciado em http://localhost:8080
+2025/05/16 14:28:50 C:/Users/NB-LCHAVES/Documents/Desenvolvimento/projetos/Synapse/internal/configuration/logger/log_print/log.go:50: [INFO] ✅ PostgreSQL versão: PostgreSQL 17.4 on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+2025/05/16 14:28:50 C:/Users/NB-LCHAVES/Documents/Desenvolvimento/projetos/Synapse/internal/configuration/logger/log_print/log.go:50: [INFO] Banco de dados OK!
+2025/05/16 14:28:50 C:/Users/NB-LCHAVES/Documents/Desenvolvimento/projetos/Synapse/cmd/server/server.go:30: 🚀 Servidor iniciado em http://localhost:8080

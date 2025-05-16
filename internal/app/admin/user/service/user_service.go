@@ -136,3 +136,7 @@ func (s *service) UpdateUserByID(userID int64, updated *userModel.User) (*userMo
 	// Atualiza no banco
 	return s.userRepo.UpdateUserByID(userID, existingUser)
 }
+
+func (s *service) DeleteUserByID(userID int64) error {
+	return s.userRepo.DeleteUserByID(userID)
+}
