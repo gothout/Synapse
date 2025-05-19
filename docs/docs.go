@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/admin/v1/enterprise": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Lista todas as empresas com suporte a paginação",
                 "consumes": [
                     "application/json"
@@ -62,6 +67,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Cria uma nova empresa com CNPJ e nome",
                 "consumes": [
                     "application/json"
@@ -108,6 +118,11 @@ const docTemplate = `{
         },
         "/admin/v1/enterprise/cnpj/{cnpj}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de uma empresa com base no CNPJ fornecido.",
                 "consumes": [
                     "application/json"
@@ -150,6 +165,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Atualiza os dados de uma empresa a partir do CNPJ fornecido na URL",
                 "consumes": [
                     "application/json"
@@ -201,6 +221,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Remove uma empresa com base no CNPJ fornecido.",
                 "consumes": [
                     "application/json"
@@ -244,6 +269,11 @@ const docTemplate = `{
         },
         "/admin/v1/enterprise/id/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de uma empresa com base no ID.",
                 "consumes": [
                     "application/json"
@@ -288,6 +318,11 @@ const docTemplate = `{
         },
         "/admin/v1/enterprise/nome/{nome}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de uma empresa com base no nome fornecido.",
                 "consumes": [
                     "application/json"
@@ -332,6 +367,11 @@ const docTemplate = `{
         },
         "/admin/v1/rules": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna todas as regras com suporte a paginação",
                 "consumes": [
                     "application/json"
@@ -377,6 +417,11 @@ const docTemplate = `{
         },
         "/admin/v1/rules/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de uma regra com base no ID",
                 "consumes": [
                     "application/json"
@@ -421,6 +466,11 @@ const docTemplate = `{
         },
         "/admin/v1/rules/{id}/permissions": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna a lista de permissões em formato namespace (ex: admin.enterprise.create)",
                 "consumes": [
                     "application/json"
@@ -468,6 +518,11 @@ const docTemplate = `{
         },
         "/admin/v1/user": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Cria um novo usuário no sistema",
                 "consumes": [
                     "application/json"
@@ -514,6 +569,11 @@ const docTemplate = `{
         },
         "/admin/v1/user/email/{email}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retorna os dados de um usuário com base no e-mail fornecido",
                 "consumes": [
                     "application/json"
@@ -610,6 +670,11 @@ const docTemplate = `{
         },
         "/admin/v1/user/{enterprise_id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Lista todos os usuários de uma empresa com paginação",
                 "consumes": [
                     "application/json"
@@ -664,6 +729,11 @@ const docTemplate = `{
         },
         "/admin/v1/user/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Atualiza os dados de um usuário com base no ID",
                 "consumes": [
                     "application/json"
@@ -721,6 +791,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Remove um usuário com base no ID fornecido",
                 "consumes": [
                     "application/json"
@@ -1038,17 +1113,25 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Forneça o token no formato: Bearer \u003ctoken\u003e",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Synapse API",
+	Description:      "API administrativa do sistema Synapse",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
