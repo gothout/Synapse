@@ -1,3 +1,13 @@
+// @title           Synapse API
+// @version         1.0
+// @description     API administrativa do sistema Synapse
+
+// 🔐 Definição do Bearer Token
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Forneça o token no formato: Bearer <token>
+
 package main
 
 import (
@@ -10,6 +20,7 @@ import (
 )
 
 func main() {
+
 	// Se o primeiro argumento for um comando tipo --check-db, executa o handler
 	if len(os.Args) > 1 && strings.HasPrefix(os.Args[1], "--") {
 		arg := strings.ToLower(os.Args[1])

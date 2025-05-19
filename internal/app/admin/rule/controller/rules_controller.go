@@ -23,6 +23,7 @@ func NewRuleController(s ruleService.Service) *RuleController {
 // @Summary      Listar regras
 // @Description  Retorna todas as regras com suporte a paginação
 // @Tags         v1 - Regra
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        limit   query     int  true  "Quantidade de resultados"
@@ -73,6 +74,7 @@ func (rc *RuleController) GetAll(ctx *gin.Context) {
 // @Summary      Buscar regra por ID
 // @Description  Retorna os dados de uma regra com base no ID
 // @Tags         v1 - Regra
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        id  path      int  true  "ID da regra"
@@ -113,6 +115,7 @@ func (rc *RuleController) GetByID(ctx *gin.Context) {
 // @Summary      Buscar permissões da regra
 // @Description  Retorna a lista de permissões em formato namespace (ex: admin.enterprise.create)
 // @Tags         v1 - Regra
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        id  path      int  true  "ID da regra"
