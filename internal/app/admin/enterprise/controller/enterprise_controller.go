@@ -22,6 +22,7 @@ func NewEnterpriseController(s enterpriseService.Service) *EnterpriseController 
 // @Summary      Criar empresa
 // @Description  Cria uma nova empresa com CNPJ e nome
 // @Tags         v1 - Empresa
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        request  body      dto.CreateEnterpriseDTO  true  "Dados da empresa"
@@ -69,6 +70,7 @@ func (ec *EnterpriseController) Create(ctx *gin.Context) {
 // @Summary      Buscar empresa por CNPJ
 // @Description  Retorna os dados de uma empresa com base no CNPJ fornecido.
 // @Tags         v1 - Empresa
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        cnpj  path      string  true  "CNPJ da empresa"
@@ -112,6 +114,7 @@ func (ec *EnterpriseController) ReadByCNPJ(ctx *gin.Context) {
 // @Summary      Buscar empresa por nome
 // @Description  Retorna os dados de uma empresa com base no nome fornecido.
 // @Tags         v1 - Empresa
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        nome  path      string  true  "Nome da empresa"
@@ -146,6 +149,7 @@ func (ec *EnterpriseController) ReadByNome(ctx *gin.Context) {
 // @Summary      Buscar empresa por ID
 // @Description  Retorna os dados de uma empresa com base no ID.
 // @Tags         v1 - Empresa
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        id  path      string  true  "ID da empresa"
@@ -180,6 +184,7 @@ func (ec *EnterpriseController) ReadByID(ctx *gin.Context) {
 // @Summary      Listar todas as empresas
 // @Description  Lista todas as empresas com suporte a paginação
 // @Tags         v1 - Empresa
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        page  query     int  true  "Número da página"
@@ -223,6 +228,7 @@ func (ec *EnterpriseController) ReadAll(ctx *gin.Context) {
 // @Summary      Atualizar empresa por CNPJ
 // @Description  Atualiza os dados de uma empresa a partir do CNPJ fornecido na URL
 // @Tags         v1 - Empresa
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        cnpj    path      string                                 true  "CNPJ da empresa atual"
@@ -286,6 +292,7 @@ func (ec *EnterpriseController) UpdateByCNPJ(ctx *gin.Context) {
 // @Summary      Deletar empresa por CNPJ
 // @Description  Remove uma empresa com base no CNPJ fornecido.
 // @Tags         v1 - Empresa
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        request  path  dto.DeleteEnterpriseByCNPJDTO  true  "CNPJ para exclusão"
