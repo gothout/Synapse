@@ -24,6 +24,7 @@ func NewUserController(s userService.Service) *UserController {
 // @Summary      Criar usuário
 // @Description  Cria um novo usuário no sistema
 // @Tags         v1 - Usuário
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        request  body      dto.AdminUserCreateDTO  true  "Dados do usuário"
@@ -67,6 +68,7 @@ func (uc *UserController) Create(ctx *gin.Context) {
 // @Summary      Listar usuários por empresa
 // @Description  Lista todos os usuários de uma empresa com paginação
 // @Tags         v1 - Usuário
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        enterprise_id  path   int     true  "ID da empresa"
@@ -131,6 +133,7 @@ func (uc *UserController) ReadAll(ctx *gin.Context) {
 // @Summary      Buscar usuário por e-mail
 // @Description  Retorna os dados de um usuário com base no e-mail fornecido
 // @Tags         v1 - Usuário
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        email  path      string  true  "E-mail do usuário"
@@ -171,6 +174,7 @@ func (uc *UserController) ReadByEmail(ctx *gin.Context) {
 // @Summary      Atualizar usuário
 // @Description  Atualiza os dados de um usuário com base no ID
 // @Tags         v1 - Usuário
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        id       path      int                     true  "ID do usuário"
@@ -237,6 +241,7 @@ func (uc *UserController) Update(ctx *gin.Context) {
 // @Summary      Deletar usuário
 // @Description  Remove um usuário com base no ID fornecido
 // @Tags         v1 - Usuário
+// @Security     BearerAuth
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "ID do usuário"

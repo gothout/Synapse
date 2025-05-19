@@ -180,6 +180,9 @@ definitions:
     type: object
 info:
   contact: {}
+  description: API administrativa do sistema Synapse
+  title: Synapse API
+  version: "1.0"
 paths:
   /admin/v1/enterprise:
     get:
@@ -209,6 +212,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Listar todas as empresas
       tags:
       - v1 - Empresa
@@ -238,6 +243,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Criar empresa
       tags:
       - v1 - Empresa
@@ -266,6 +273,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Deletar empresa por CNPJ
       tags:
       - v1 - Empresa
@@ -294,6 +303,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Buscar empresa por CNPJ
       tags:
       - v1 - Empresa
@@ -329,6 +340,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Atualizar empresa por CNPJ
       tags:
       - v1 - Empresa
@@ -358,6 +371,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Buscar empresa por ID
       tags:
       - v1 - Empresa
@@ -387,6 +402,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Buscar empresa por nome
       tags:
       - v1 - Empresa
@@ -417,6 +434,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Listar regras
       tags:
       - v1 - Regra
@@ -446,6 +465,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Buscar regra por ID
       tags:
       - v1 - Regra
@@ -477,6 +498,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Buscar permissões da regra
       tags:
       - v1 - Regra
@@ -507,6 +530,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Criar usuário
       tags:
       - v1 - Usuário
@@ -543,6 +568,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Listar usuários por empresa
       tags:
       - v1 - Usuário
@@ -574,6 +601,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Deletar usuário
       tags:
       - v1 - Usuário
@@ -612,6 +641,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Atualizar usuário
       tags:
       - v1 - Usuário
@@ -641,6 +672,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
       summary: Buscar usuário por e-mail
       tags:
       - v1 - Usuário
@@ -678,4 +711,10 @@ paths:
       summary: Gerar token JWT
       tags:
       - v1 - Usuário
+securityDefinitions:
+  BearerAuth:
+    description: 'Forneça o token no formato: Bearer <token>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
