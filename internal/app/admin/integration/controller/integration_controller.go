@@ -6,6 +6,7 @@ import (
 	integrationService "Synapse/internal/app/admin/integration/service"
 	"Synapse/internal/configuration/rest_err"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -192,4 +193,157 @@ func (ic *IntegrationController) GetByEnterpriseID(ctx *gin.Context) {
 
 	// Resposta final
 	ctx.JSON(http.StatusOK, dto.FromIntegracaoEmpresaDetalhadaModelList(integracoes))
+}
+
+// DeleteIntegracaoFromEnterprise godoc
+// @Summary      Remover vínculo entre empresa e integração
+// @Description  Remove o vínculo entre uma empresa e uma integração existente
+// @Tags         v1 - Integração
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        body body dto.DeleteIntegracaoEnterpriseRequest true "Dados para remover vínculo"
+// @Success      204  {string} string "sem conteúdo"
+// @Failure      400  {object} rest_err.RestErr
+// @Failure      500  {object} rest_err.RestErr
+// @Router       /admin/v1/integration/enterprise [delete]
+func (ic *IntegrationController) DeleteIntegracaoFromEnterprise(ctx *gin.Context) {
+	var req dto.DeleteIntegracaoEnterpriseRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro ao processar JSON de remoção", []rest_err.Causes{
+			rest_err.NewCause("json", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	if err := binding.ValidateDeleteIntegracaoEnterprise(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação dos dados", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	if err := ic.service.DeleteIntegracaoFromEnterprise(req.EnterpriseID, req.IntegracaoID); err != nil {
+		restErr := rest_err.NewInternalServerError("Erro ao remover vínculo", []rest_err.Causes{
+			rest_err.NewCause("service", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+}
+
+// CreateIntegracaoUser godoc
+// @Summary      Vincular integração a um usuário
+// @Description  Cria o vínculo entre um usuário e uma integração
+// @Tags         v1 - Integração
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        body body dto.CreateIntegracaoUserRequest true "Dados para vincular usuário à integração"
+// @Success      201  {string} string "vínculo criado com sucesso"
+// @Failure      400  {object} rest_err.RestErr
+// @Failure      403  {object} rest_err.RestErr
+// @Failure      404  {object} rest_err.RestErr
+// @Failure      500  {object} rest_err.RestErr
+// @Router       /admin/v1/integration/user [post]
+func (ic *IntegrationController) CreateIntegracaoUser(ctx *gin.Context) {
+	var req dto.CreateIntegracaoUserRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro no JSON recebido", []rest_err.Causes{
+			rest_err.NewCause("json", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	if err := binding.ValidateCreateIntegracaoUser(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação dos campos", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	err := ic.service.CreateIntegracaoUser(req.ToModel())
+	if err != nil {
+		// Tratamento específico baseado na mensagem do service
+		switch {
+		case strings.Contains(err.Error(), "usuário com ID"):
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Usuário não encontrado"))
+			return
+		case strings.Contains(err.Error(), "integração com ID"):
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Integração não encontrada"))
+			return
+		case strings.Contains(err.Error(), "violates unique constraint"): // opcional
+			ctx.JSON(http.StatusForbidden, rest_err.NewForbiddenError("Este vínculo já existe"))
+			return
+		default:
+			ctx.JSON(http.StatusInternalServerError, rest_err.NewInternalServerError("Erro ao criar vínculo usuário ↔ integração", []rest_err.Causes{
+				rest_err.NewCause("service", err.Error()),
+			}))
+			return
+		}
+	}
+
+	ctx.Status(http.StatusCreated)
+}
+
+// CreateTokenIntegracao godoc
+// @Summary      Gerar token de Integração
+// @Description  Autentica usuário admin e gera um token exclusivo para a integração
+// @Tags         v1 - Integração
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        body body dto.CreateTokenIntegracaoRequest true "Dados de login e integração"
+// @Success      200  {object} map[string]string "token de integração"
+// @Failure      400  {object} rest_err.RestErr
+// @Failure      403  {object} rest_err.RestErr
+// @Failure      404  {object} rest_err.RestErr
+// @Failure      500  {object} rest_err.RestErr
+// @Router       /admin/v1/integration/token [post]
+func (ic *IntegrationController) CreateTokenIntegracao(ctx *gin.Context) {
+	var req dto.CreateTokenIntegracaoRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, rest_err.NewBadRequestValidationError("Erro no JSON recebido", []rest_err.Causes{
+			rest_err.NewCause("json", err.Error()),
+		}))
+		return
+	}
+
+	if err := binding.ValidateCreateTokenIntegracao(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, rest_err.NewBadRequestValidationError("Erro de validação", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		}))
+		return
+	}
+
+	token, err := ic.service.CreateTokenIntegracao(req.Email, req.Senha, req.IntegracaoID)
+	if err != nil {
+		switch {
+		case strings.Contains(err.Error(), "credenciais"):
+			ctx.JSON(http.StatusForbidden, rest_err.NewForbiddenError("Credenciais inválidas"))
+			return
+		case strings.Contains(err.Error(), "não possui permissão"):
+			ctx.JSON(http.StatusForbidden, rest_err.NewForbiddenError("Usuário não vinculado à integração"))
+			return
+		case strings.Contains(err.Error(), "não encontrada"):
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError(err.Error()))
+			return
+		default:
+			ctx.JSON(http.StatusInternalServerError, rest_err.NewInternalServerError("Erro ao gerar token", []rest_err.Causes{
+				rest_err.NewCause("service", err.Error()),
+			}))
+			return
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
