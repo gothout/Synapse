@@ -107,3 +107,22 @@ func FromIntegracaoEmpresaDetalhadaModelList(list []model.IntegracaoEmpresaDetal
 	}
 	return resp
 }
+
+// IntegracaoUsuarioResponse representa a resposta da listagem de permissões do usuário
+type IntegracaoUsuarioResponse struct {
+	ID    int64  `json:"id"`
+	Nome  string `json:"nome"`
+	Marca string `json:"marca"`
+}
+
+func FromIntegracaoUsuarioModelList(list []model.IntegracaoUsuarioDetalhada) []IntegracaoUsuarioResponse {
+	resp := make([]IntegracaoUsuarioResponse, 0, len(list))
+	for _, i := range list {
+		resp = append(resp, IntegracaoUsuarioResponse{
+			ID:    i.ID,
+			Nome:  i.Nome,
+			Marca: i.Marca,
+		})
+	}
+	return resp
+}

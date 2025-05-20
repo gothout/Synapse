@@ -121,6 +121,15 @@ definitions:
       nome:
         type: string
     type: object
+  integration.IntegracaoUsuarioResponse:
+    properties:
+      id:
+        type: integer
+      marca:
+        type: string
+      nome:
+        type: string
+    type: object
   integration.MarcaResponse:
     properties:
       id:
@@ -740,6 +749,43 @@ paths:
       security:
       - BearerAuth: []
       summary: Vincular integração a um usuário
+      tags:
+      - v1 - Integração
+  /admin/v1/integration/user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todas as integrações vinculadas a um usuário
+      parameters:
+      - description: ID do usuário
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/integration.IntegracaoUsuarioResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Listar permissões de integração do usuário
       tags:
       - v1 - Integração
   /admin/v1/rules:

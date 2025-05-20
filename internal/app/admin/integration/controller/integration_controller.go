@@ -347,3 +347,49 @@ func (ic *IntegrationController) CreateTokenIntegracao(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
+
+// GetIntegracoesByUserID godoc
+// @Summary      Listar permissões de integração do usuário
+// @Description  Retorna todas as integrações vinculadas a um usuário
+// @Tags         v1 - Integração
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        user_id path int true "ID do usuário"
+// @Success      200  {array}  dto.IntegracaoUsuarioResponse
+// @Failure      400  {object} rest_err.RestErr
+// @Failure      404  {object} rest_err.RestErr
+// @Failure      500  {object} rest_err.RestErr
+// @Router       /admin/v1/integration/user/{user_id} [get]
+func (ic *IntegrationController) GetIntegracoesByUserID(ctx *gin.Context) {
+	var req dto.GetIntegracoesByUserIDURI
+
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, rest_err.NewBadRequestValidationError("Erro ao processar URI", []rest_err.Causes{
+			rest_err.NewCause("uri", err.Error()),
+		}))
+		return
+	}
+
+	if err := binding.ValidateGetIntegracoesByUserIDURI(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, rest_err.NewBadRequestValidationError("Erro de validação", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		}))
+		return
+	}
+
+	integs, err := ic.service.GetIntegracoesByUserID(req.ToID())
+	if err != nil {
+		switch {
+		case strings.Contains(err.Error(), "usuário"):
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Usuário não encontrado"))
+		default:
+			ctx.JSON(http.StatusInternalServerError, rest_err.NewInternalServerError("Erro ao buscar permissões de integração", []rest_err.Causes{
+				rest_err.NewCause("service", err.Error()),
+			}))
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.FromIntegracaoUsuarioModelList(integs))
+}
