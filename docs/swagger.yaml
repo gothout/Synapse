@@ -47,6 +47,37 @@ definitions:
     required:
     - cnpj
     type: object
+  integration.CreateIntegracaoEnterpriseRequest:
+    properties:
+      enterprise_id:
+        type: integer
+      integracao_id:
+        type: integer
+    required:
+    - enterprise_id
+    - integracao_id
+    type: object
+  integration.IntegracaoDetalhadaResponse:
+    properties:
+      empresa:
+        description: nome da marca
+        type: string
+      id_integracao:
+        type: integer
+      id_marca:
+        type: integer
+      integracao:
+        type: string
+    type: object
+  integration.IntegracaoEmpresaDetalhadaResponse:
+    properties:
+      integracao_id:
+        type: integer
+      marca:
+        type: string
+      nome:
+        type: string
+    type: object
   integration.IntegracaoResponse:
     properties:
       id:
@@ -442,6 +473,105 @@ paths:
       security:
       - BearerAuth: []
       summary: Listar integrações
+      tags:
+      - v1 - Integração
+  /admin/v1/integration/enterprise:
+    post:
+      consumes:
+      - application/json
+      description: Cria o vínculo entre uma empresa e uma integração
+      parameters:
+      - description: Dados para vincular empresa à integração
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/integration.CreateIntegracaoEnterpriseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: criado com sucesso
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Vincular integração a uma empresa
+      tags:
+      - v1 - Integração
+  /admin/v1/integration/enterprise/{enterprise_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todas as integrações vinculadas a uma empresa específica
+      parameters:
+      - description: ID da empresa
+        in: path
+        name: enterprise_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/integration.IntegracaoEmpresaDetalhadaResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Listar integrações liberadas para uma empresa
+      tags:
+      - v1 - Integração
+  /admin/v1/integration/marca/detalhada:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todas as integrações vinculadas a uma marca com nome da
+        empresa
+      parameters:
+      - description: ID da marca
+        in: query
+        name: marca_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/integration.IntegracaoDetalhadaResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Listar integrações detalhadas por marca
       tags:
       - v1 - Integração
   /admin/v1/integration/marcas:
