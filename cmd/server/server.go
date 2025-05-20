@@ -5,6 +5,7 @@ import (
 	"os"
 
 	adminHandler "Synapse/internal/app/admin/handler"
+	corsMiddleware "Synapse/internal/app/middleware/server"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +19,8 @@ func InitServer() *gin.Engine {
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	// Configurando cors
+	router.Use(corsMiddleware.MiddlewareCors())
 	// Aqui registramos todos os domínios, cada um resolve suas dependências
 	adminHandler.RegisterAdminRoutes(router)
 
