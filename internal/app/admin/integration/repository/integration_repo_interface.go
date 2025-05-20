@@ -1,6 +1,9 @@
 package integration
 
-import integration "Synapse/internal/app/admin/integration/model"
+import (
+	integration "Synapse/internal/app/admin/integration/model"
+	"context"
+)
 
 type Repository interface {
 	// Busca todas as integrações
@@ -9,4 +12,11 @@ type Repository interface {
 	GetAllMarcas() ([]integration.Marca, error)
 	//Buscar todas as integrações baseado no MarcaID
 	GetIntegracoesDetalhadasByMarcaID(marcaID int64) ([]integration.IntegracaoDetalhada, error)
+
+	// Vincular empresa a integração
+	CreateIntegracaoEnterprise(data integration.IntegracaoEnterprise) error
+	// Busca integracao por ID
+	GetIntegracaoByID(ctx context.Context, id int64) (*integration.Integration, error)
+	// Retorna detalhe de integrações para X empresa
+	GetIntegracoesByEnterpriseID(enterpriseID int64) ([]integration.IntegracaoEmpresaDetalhada, error)
 }
