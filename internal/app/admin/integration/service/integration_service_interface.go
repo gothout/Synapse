@@ -19,4 +19,6 @@ type Service interface {
 	CreateIntegracaoUser(data integration.IntegracaoUser) error
 	// Criar token de integração
 	CreateTokenIntegracao(email, senha string, integracaoID int64) (string, error)
+	// Busca  os dados de uma integração que o usuário possui
+	GetIntegracoesByUserID(userID int64) ([]integration.IntegracaoUsuarioDetalhada, error)
 }

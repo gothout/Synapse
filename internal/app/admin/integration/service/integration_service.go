@@ -141,3 +141,13 @@ func (s *service) CreateTokenIntegracao(email, senha string, integracaoID int64)
 
 	return tokenData.Token, nil
 }
+
+// Busca  os dados de uma integração que o usuário possui
+func (s *service) GetIntegracoesByUserID(userID int64) ([]model.IntegracaoUsuarioDetalhada, error) {
+	// Valida se o usuário existe
+	if _, err := s.userRepo.ReadByID(userID); err != nil {
+		return nil, fmt.Errorf("usuário com ID %d não encontrado", userID)
+	}
+
+	return s.repo.GetIntegracoesByUserID(userID)
+}

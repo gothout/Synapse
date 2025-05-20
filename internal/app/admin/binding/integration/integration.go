@@ -73,3 +73,11 @@ func ValidateCreateTokenIntegracao(input dto.CreateTokenIntegracaoRequest) error
 	}
 	return nil
 }
+
+// ValidateGetIntegracoesByUserIDURI valida os user ID para validar as integrações que o usuario contem
+func ValidateGetIntegracoesByUserIDURI(input dto.GetIntegracoesByUserIDURI) error {
+	if input.UserID <= 0 {
+		return errors.New("user_id inválido ou ausente na URI")
+	}
+	return nil
+}
