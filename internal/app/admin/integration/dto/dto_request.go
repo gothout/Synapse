@@ -3,6 +3,15 @@ package integration
 import model "Synapse/internal/app/admin/integration/model"
 
 //
+// 🔹 Request: Filtro por enterprise_id e integracao_id (json)
+//
+// DeleteIntegracaoEnterpriseRequest representa o corpo da requisição para remover o vínculo entre empresa e integração
+type DeleteIntegracaoEnterpriseRequest struct {
+	EnterpriseID int64 `json:"enterprise_id" binding:"required"`
+	IntegracaoID int64 `json:"integracao_id" binding:"required"`
+}
+
+//
 // 🔹 Request: Filtro por marca_id (query/json)
 //
 
@@ -51,4 +60,27 @@ func (req CreateIntegracaoEnterpriseRequest) ToModelIntegracaoEnterprise() model
 		EnterpriseId: req.EnterpriseID,
 		IntegracaoId: req.IntegracaoID,
 	}
+}
+
+//
+// 🔹 Request: corpo para criação de vínculo entre usuario e integração
+//
+
+type CreateIntegracaoUserRequest struct {
+	UserID       int64 `json:"user_id" binding:"required"`
+	IntegracaoID int64 `json:"integracao_id" binding:"required"`
+}
+
+func (r CreateIntegracaoUserRequest) ToModel() model.IntegracaoUser {
+	return model.IntegracaoUser{
+		UserID:       r.UserID,
+		IntegracaoID: r.IntegracaoID,
+	}
+}
+
+// CreateTokenIntegracaoRequest representa os dados para autenticar e gerar um token de integração
+type CreateTokenIntegracaoRequest struct {
+	Email        string `json:"email" binding:"required,email"`
+	Senha        string `json:"senha" binding:"required,min=6"`
+	IntegracaoID int64  `json:"integracao_id" binding:"required"`
 }

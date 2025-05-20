@@ -13,4 +13,10 @@ type Service interface {
 	CreateIntegracaoEnterprise(data integration.IntegracaoEnterprise) error
 	// Retorna detalhe de integrações para X empresa
 	GetIntegracoesByEnterpriseID(enterpriseID int64) ([]integration.IntegracaoEmpresaDetalhada, error)
+	// Remover integração de empresa
+	DeleteIntegracaoFromEnterprise(enterpriseID, integrationID int64) error
+	//Cria vinculo entre usuario e integracao
+	CreateIntegracaoUser(data integration.IntegracaoUser) error
+	// Criar token de integração
+	CreateTokenIntegracao(email, senha string, integracaoID int64) (string, error)
 }

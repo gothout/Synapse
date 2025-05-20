@@ -440,6 +440,55 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove o vínculo entre uma empresa e uma integração existente",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Remover vínculo entre empresa e integração",
+                "parameters": [
+                    {
+                        "description": "Dados para remover vínculo",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/integration.DeleteIntegracaoEnterpriseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "sem conteúdo",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
             }
         },
         "/admin/v1/integration/enterprise/{enterprise_id}": {
@@ -569,6 +618,135 @@
                             "items": {
                                 "$ref": "#/definitions/integration.MarcaResponse"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/v1/integration/token": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Autentica usuário admin e gera um token exclusivo para a integração",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Gerar token de Integração",
+                "parameters": [
+                    {
+                        "description": "Dados de login e integração",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/integration.CreateTokenIntegracaoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "token de integração",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/v1/integration/user": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Cria o vínculo entre um usuário e uma integração",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Vincular integração a um usuário",
+                "parameters": [
+                    {
+                        "description": "Dados para vincular usuário à integração",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/integration.CreateIntegracaoUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "vínculo criado com sucesso",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
                         }
                     },
                     "500": {
@@ -1132,6 +1310,56 @@
             }
         },
         "integration.CreateIntegracaoEnterpriseRequest": {
+            "type": "object",
+            "required": [
+                "enterprise_id",
+                "integracao_id"
+            ],
+            "properties": {
+                "enterprise_id": {
+                    "type": "integer"
+                },
+                "integracao_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "integration.CreateIntegracaoUserRequest": {
+            "type": "object",
+            "required": [
+                "integracao_id",
+                "user_id"
+            ],
+            "properties": {
+                "integracao_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "integration.CreateTokenIntegracaoRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "integracao_id",
+                "senha"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "integracao_id": {
+                    "type": "integer"
+                },
+                "senha": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "integration.DeleteIntegracaoEnterpriseRequest": {
             "type": "object",
             "required": [
                 "enterprise_id",

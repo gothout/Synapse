@@ -165,3 +165,77 @@ func (r *repository) GetIntegracoesByEnterpriseID(enterpriseID int64) ([]model.I
 
 	return result, nil
 }
+
+// remover a integração de uma empresa específica
+func (r *repository) DeleteIntegracaoFromEnterprise(enterpriseID, integracaoID int64) error {
+	query := `
+		DELETE FROM admin_integracao_enterprise
+		WHERE enterprise_id = $1 AND integracao_id = $2
+	`
+
+	cmdTag, err := r.db.Exec(context.Background(), query, enterpriseID, integracaoID)
+	if err != nil {
+		return fmt.Errorf("erro ao remover integração da empresa")
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("nenhuma relação encontrada para remover")
+	}
+
+	return nil
+}
+
+// Vincular usuario a integração
+func (r *repository) CreateIntegracaoUser(data model.IntegracaoUser) error {
+	query := `
+		INSERT INTO admin_integracao_user (user_id, integracao_id)
+		VALUES ($1, $2)
+		ON CONFLICT (user_id, integracao_id) DO NOTHING
+	`
+
+	_, err := r.db.Exec(context.Background(), query, data.UserID, data.IntegracaoID)
+	if err != nil {
+		return fmt.Errorf("erro ao vincular usuário à integração: %w", err)
+	}
+	return nil
+}
+
+// Salvar token para acesso a integração
+func (r *repository) SaveIntegracaoToken(userID, integracaoID int64, token string) error {
+	ctx := context.Background()
+
+	// Remove qualquer token antigo
+	delQuery := `
+		DELETE FROM admin_integracao_tokens
+		WHERE user_id = $1 AND integracao_id = $2
+	`
+	if _, err := r.db.Exec(ctx, delQuery, userID, integracaoID); err != nil {
+		return fmt.Errorf("erro ao remover token antigo: %w", err)
+	}
+
+	// Insere novo token
+	insertQuery := `
+		INSERT INTO admin_integracao_tokens (token, user_id, integracao_id)
+		VALUES ($1, $2, $3)
+	`
+	if _, err := r.db.Exec(ctx, insertQuery, token, userID, integracaoID); err != nil {
+		return fmt.Errorf("erro ao salvar novo token: %w", err)
+	}
+
+	return nil
+}
+
+// Checar o usuario pela integração
+func (r *repository) CheckUserHasIntegracao(userID, integracaoID int64) (bool, error) {
+	query := `
+		SELECT COUNT(1)
+		FROM admin_integracao_user
+		WHERE user_id = $1 AND integracao_id = $2
+	`
+	var count int
+	err := r.db.QueryRow(context.Background(), query, userID, integracaoID).Scan(&count)
+	if err != nil {
+		return false, fmt.Errorf("erro ao verificar vínculo do usuário à integração: %w", err)
+	}
+	return count > 0, nil
+}

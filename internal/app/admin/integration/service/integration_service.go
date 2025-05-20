@@ -4,6 +4,8 @@ import (
 	enterpriseRepo "Synapse/internal/app/admin/enterprise/repository"
 	model "Synapse/internal/app/admin/integration/model"
 	repository "Synapse/internal/app/admin/integration/repository"
+	"Synapse/internal/app/admin/pkg/security"
+	userRepo "Synapse/internal/app/admin/user/repository"
 	"context"
 	"fmt"
 )
@@ -11,16 +13,18 @@ import (
 type service struct {
 	repo           repository.Repository
 	enterpriseRepo enterpriseRepo.Repository
+	userRepo       userRepo.Repository
 }
 
-// NewService cria uma nova instância do serviço de integração
 func NewService(
 	r repository.Repository,
 	eRepo enterpriseRepo.Repository,
+	uRepo userRepo.Repository,
 ) Service {
 	return &service{
 		repo:           r,
 		enterpriseRepo: eRepo,
+		userRepo:       uRepo,
 	}
 }
 
@@ -67,4 +71,73 @@ func (s *service) GetIntegracoesByEnterpriseID(enterpriseID int64) ([]model.Inte
 
 	// Busca integrações liberadas para a empresa
 	return s.repo.GetIntegracoesByEnterpriseID(enterpriseID)
+}
+
+// Remove a integração vinculada de uma empresa
+func (s *service) DeleteIntegracaoFromEnterprise(enterpriseID, integracaoID int64) error {
+	ctx := context.Background()
+
+	// Verifica se a empresa existe
+	if _, err := s.enterpriseRepo.ReadByID(enterpriseID); err != nil {
+		return fmt.Errorf("empresa não encontrada")
+	}
+
+	// Verifica se a integração existe
+	if _, err := s.repo.GetIntegracaoByID(ctx, integracaoID); err != nil {
+		return fmt.Errorf("integração com ID %d não encontrada", integracaoID)
+	}
+
+	// Remove vínculo
+	return s.repo.DeleteIntegracaoFromEnterprise(enterpriseID, integracaoID)
+}
+
+// Cria vinculo entre usuario e integracao
+func (s *service) CreateIntegracaoUser(data model.IntegracaoUser) error {
+	ctx := context.Background()
+
+	// Verifica se a integração existe
+	if _, err := s.repo.GetIntegracaoByID(ctx, data.IntegracaoID); err != nil {
+		return fmt.Errorf("integração não encontrada")
+	}
+
+	// Verifica se o usuário existe
+	if _, err := s.userRepo.ReadByID(data.UserID); err != nil {
+		return fmt.Errorf("usuário não encontrado")
+	}
+
+	// Cria vínculo
+	return s.repo.CreateIntegracaoUser(data)
+}
+
+// Criar token de integração
+func (s *service) CreateTokenIntegracao(email, senha string, integracaoID int64) (string, error) {
+	ctx := context.Background()
+
+	user, err := s.userRepo.ValidateCredentials(ctx, email, senha)
+	if err != nil {
+		return "", fmt.Errorf("credenciais inválidas")
+	}
+
+	// Verifica se o usuário está vinculado à integração
+	hasAccess, err := s.repo.CheckUserHasIntegracao(user.ID, integracaoID)
+	if err != nil {
+		return "", err
+	}
+	if !hasAccess {
+		return "", fmt.Errorf("usuário não possui permissão para essa integração")
+	}
+
+	// Gera token simples (pode ser UUID, JWT ou outro hash)
+	tokenData, err := security.GenerateToken(user.ID)
+	if err != nil {
+		return "", fmt.Errorf("erro ao gerar token: %w", err)
+	}
+
+	// Salva no banco
+	err = s.repo.SaveIntegracaoToken(user.ID, integracaoID, tokenData.Token)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenData.Token, nil
 }
