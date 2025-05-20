@@ -24,3 +24,8 @@ func (s *service) GetAllIntegrations() ([]model.Integration, error) {
 func (s *service) GetAllMarcas() ([]model.Marca, error) {
 	return s.repo.GetAllMarcas()
 }
+
+// Buscar todas as integrações baseado no MarcaID
+func (s *service) GetIntegrationsByMarcaID(marcaID int64) ([]model.IntegracaoDetalhada, error) {
+	return s.repo.GetIntegracoesDetalhadasByMarcaID(marcaID)
+}

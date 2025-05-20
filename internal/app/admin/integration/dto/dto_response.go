@@ -15,6 +15,14 @@ type IntegracaoResponse struct {
 	MarcaID int64  `json:"marca_id"`
 }
 
+// IntegracaoDetalhadaResponse representa a resposta com join entre integração e marca
+type IntegracaoDetalhadaResponse struct {
+	IdIntegracao int64  `json:"id_integracao"`
+	IdMarca      int64  `json:"id_marca"`
+	Integracao   string `json:"integracao"`
+	Empresa      string `json:"empresa"` // nome da marca
+}
+
 // FromMarcaModel converte model.Marca em DTO MarcaResponse
 func FromMarcaModel(m model.Marca) MarcaResponse {
 	return MarcaResponse{
@@ -46,6 +54,25 @@ func FromIntegracaoModelList(list []model.Integration) []IntegracaoResponse {
 	resp := make([]IntegracaoResponse, 0, len(list))
 	for _, i := range list {
 		resp = append(resp, FromIntegracaoModel(i))
+	}
+	return resp
+}
+
+// FromIntegracaoDetalhadaModel converte model.IntegracaoDetalhada em DTO IntegracaoDetalhadaResponse
+func FromIntegracaoDetalhadaModel(i model.IntegracaoDetalhada) IntegracaoDetalhadaResponse {
+	return IntegracaoDetalhadaResponse{
+		IdIntegracao: i.IdIntegracao,
+		IdMarca:      i.IdMarca,
+		Integracao:   i.NomeIntegracao,
+		Empresa:      i.NomeMarca,
+	}
+}
+
+// FromIntegracaoDetalhadaModelList converte slice de model.IntegracaoDetalhada em slice de DTO
+func FromIntegracaoDetalhadaModelList(list []model.IntegracaoDetalhada) []IntegracaoDetalhadaResponse {
+	resp := make([]IntegracaoDetalhadaResponse, 0, len(list))
+	for _, i := range list {
+		resp = append(resp, FromIntegracaoDetalhadaModel(i))
 	}
 	return resp
 }
