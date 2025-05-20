@@ -57,6 +57,40 @@ definitions:
     - enterprise_id
     - integracao_id
     type: object
+  integration.CreateIntegracaoUserRequest:
+    properties:
+      integracao_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - integracao_id
+    - user_id
+    type: object
+  integration.CreateTokenIntegracaoRequest:
+    properties:
+      email:
+        type: string
+      integracao_id:
+        type: integer
+      senha:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - integracao_id
+    - senha
+    type: object
+  integration.DeleteIntegracaoEnterpriseRequest:
+    properties:
+      enterprise_id:
+        type: integer
+      integracao_id:
+        type: integer
+    required:
+    - enterprise_id
+    - integracao_id
+    type: object
   integration.IntegracaoDetalhadaResponse:
     properties:
       empresa:
@@ -476,6 +510,37 @@ paths:
       tags:
       - v1 - Integração
   /admin/v1/integration/enterprise:
+    delete:
+      consumes:
+      - application/json
+      description: Remove o vínculo entre uma empresa e uma integração existente
+      parameters:
+      - description: Dados para remover vínculo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/integration.DeleteIntegracaoEnterpriseRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: sem conteúdo
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Remover vínculo entre empresa e integração
+      tags:
+      - v1 - Integração
     post:
       consumes:
       - application/json
@@ -593,6 +658,88 @@ paths:
       security:
       - BearerAuth: []
       summary: Listar marcas de integração
+      tags:
+      - v1 - Integração
+  /admin/v1/integration/token:
+    post:
+      consumes:
+      - application/json
+      description: Autentica usuário admin e gera um token exclusivo para a integração
+      parameters:
+      - description: Dados de login e integração
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/integration.CreateTokenIntegracaoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token de integração
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Gerar token de Integração
+      tags:
+      - v1 - Integração
+  /admin/v1/integration/user:
+    post:
+      consumes:
+      - application/json
+      description: Cria o vínculo entre um usuário e uma integração
+      parameters:
+      - description: Dados para vincular usuário à integração
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/integration.CreateIntegracaoUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: vínculo criado com sucesso
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Vincular integração a um usuário
       tags:
       - v1 - Integração
   /admin/v1/rules:
