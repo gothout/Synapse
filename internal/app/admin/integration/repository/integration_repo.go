@@ -101,3 +101,67 @@ func (r *repository) GetIntegracoesDetalhadasByMarcaID(marcaID int64) ([]model.I
 
 	return list, nil
 }
+
+// Vincular empresa a integração
+func (r *repository) CreateIntegracaoEnterprise(data model.IntegracaoEnterprise) error {
+	query := `
+		INSERT INTO admin_integracao_enterprise (enterprise_id, integracao_id)
+		VALUES ($1, $2)
+		ON CONFLICT (enterprise_id, integracao_id) DO NOTHING
+	`
+
+	_, err := r.db.Exec(context.Background(), query, data.EnterpriseId, data.IntegracaoId)
+	if err != nil {
+		return fmt.Errorf("erro ao vincular integração à empresa")
+	}
+
+	return nil
+}
+
+func (r *repository) GetIntegracaoByID(ctx context.Context, id int64) (*model.Integration, error) {
+	query := `
+		SELECT id, nome, marca_id
+		FROM admin_integracoes
+		WHERE id = $1
+	`
+
+	var integ model.Integration
+	err := r.db.QueryRow(ctx, query, id).Scan(&integ.Id, &integ.Nome, &integ.MarcaId)
+	if err != nil {
+		return nil, fmt.Errorf("integração com ID %d não encontrada: %w", id, err)
+	}
+
+	return &integ, nil
+}
+
+// Retorna detalhe de integrações para X empresa
+func (r *repository) GetIntegracoesByEnterpriseID(enterpriseID int64) ([]model.IntegracaoEmpresaDetalhada, error) {
+	query := `
+		SELECT 
+			i.id AS integracao_id,
+			i.nome AS integracao,
+			m.nome AS marca
+		FROM admin_integracao_enterprise ie
+		JOIN admin_integracoes i ON ie.integracao_id = i.id
+		JOIN admin_integracao_marcas m ON i.marca_id = m.id
+		WHERE ie.enterprise_id = $1
+		ORDER BY i.id
+	`
+
+	rows, err := r.db.Query(context.Background(), query, enterpriseID)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao buscar integrações da empresa %d: %w", enterpriseID, err)
+	}
+	defer rows.Close()
+
+	var result []model.IntegracaoEmpresaDetalhada
+	for rows.Next() {
+		var item model.IntegracaoEmpresaDetalhada
+		if err := rows.Scan(&item.IntegracaoID, &item.Integracao, &item.Marca); err != nil {
+			return nil, fmt.Errorf("erro ao escanear integração: %w", err)
+		}
+		result = append(result, item)
+	}
+
+	return result, nil
+}

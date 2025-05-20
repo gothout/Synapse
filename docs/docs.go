@@ -399,6 +399,109 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/v1/integration/enterprise": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Cria o vínculo entre uma empresa e uma integração",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Vincular integração a uma empresa",
+                "parameters": [
+                    {
+                        "description": "Dados para vincular empresa à integração",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/integration.CreateIntegracaoEnterpriseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "criado com sucesso",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/v1/integration/enterprise/{enterprise_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna todas as integrações vinculadas a uma empresa específica",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Listar integrações liberadas para uma empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID da empresa",
+                        "name": "enterprise_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/integration.IntegracaoEmpresaDetalhadaResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/v1/integration/marca/detalhada": {
             "get": {
                 "security": [
@@ -1036,6 +1139,21 @@ const docTemplate = `{
                 }
             }
         },
+        "integration.CreateIntegracaoEnterpriseRequest": {
+            "type": "object",
+            "required": [
+                "enterprise_id",
+                "integracao_id"
+            ],
+            "properties": {
+                "enterprise_id": {
+                    "type": "integer"
+                },
+                "integracao_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "integration.IntegracaoDetalhadaResponse": {
             "type": "object",
             "properties": {
@@ -1050,6 +1168,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "integracao": {
+                    "type": "string"
+                }
+            }
+        },
+        "integration.IntegracaoEmpresaDetalhadaResponse": {
+            "type": "object",
+            "properties": {
+                "integracao_id": {
+                    "type": "integer"
+                },
+                "marca": {
+                    "type": "string"
+                },
+                "nome": {
                     "type": "string"
                 }
             }
