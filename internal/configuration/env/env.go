@@ -42,8 +42,6 @@ func InitEnvsDev() {
 
 	fmt.Println("Iniciando Envs de log")
 	fmt.Println("Env de log sistematica: ", GetLog())
-	// Buscando secretkey sem logar.
-	GetSecretKey()
 }
 
 func InitEnvProd() {
@@ -61,7 +59,5 @@ func InitEnvProd() {
 
 	fmt.Println("Iniciando Envs de log")
 	fmt.Println("Env de log sistematica: ", GetLog())
-	// Buscando secretkey sem logar.
-	GetSecretKey()
 
 }

@@ -357,6 +357,74 @@
                 }
             }
         },
+        "/admin/v1/integration": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna todas as integrações disponíveis",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Listar integrações",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/integration.IntegracaoResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/v1/integration/marcas": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna todas as marcas de integração",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Listar marcas de integração",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/integration.MarcaResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/v1/rules": {
             "get": {
                 "security": [
@@ -904,6 +972,31 @@
                 },
                 "nome": {
                     "description": "nome opcional",
+                    "type": "string"
+                }
+            }
+        },
+        "integration.IntegracaoResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "marca_id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                }
+            }
+        },
+        "integration.MarcaResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
                     "type": "string"
                 }
             }
