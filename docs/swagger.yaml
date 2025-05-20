@@ -47,6 +47,22 @@ definitions:
     required:
     - cnpj
     type: object
+  integration.IntegracaoResponse:
+    properties:
+      id:
+        type: integer
+      marca_id:
+        type: integer
+      nome:
+        type: string
+    type: object
+  integration.MarcaResponse:
+    properties:
+      id:
+        type: integer
+      nome:
+        type: string
+    type: object
   rest_err.Causes:
     properties:
       field:
@@ -407,6 +423,48 @@ paths:
       summary: Buscar empresa por nome
       tags:
       - v1 - Empresa
+  /admin/v1/integration:
+    get:
+      description: Retorna todas as integrações disponíveis
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/integration.IntegracaoResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Listar integrações
+      tags:
+      - v1 - Integração
+  /admin/v1/integration/marcas:
+    get:
+      description: Retorna todas as marcas de integração
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/integration.MarcaResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Listar marcas de integração
+      tags:
+      - v1 - Integração
   /admin/v1/rules:
     get:
       consumes:
