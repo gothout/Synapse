@@ -26,4 +26,6 @@ type Repository interface {
 	// Criar token para acessar integração
 	SaveIntegracaoToken(userID, integracaoID int64, token string) error
 	CheckUserHasIntegracao(userID, integracaoID int64) (bool, error)
+	// Busca  os dados de uma integração que o usuário possui
+	GetIntegracoesByUserID(userID int64) ([]integration.IntegracaoUsuarioDetalhada, error)
 }

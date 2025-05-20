@@ -239,3 +239,32 @@ func (r *repository) CheckUserHasIntegracao(userID, integracaoID int64) (bool, e
 	}
 	return count > 0, nil
 }
+
+// Busca  os dados de uma integração que o usuário possui
+func (r *repository) GetIntegracoesByUserID(userID int64) ([]model.IntegracaoUsuarioDetalhada, error) {
+	query := `
+		SELECT ai.id, ai.nome, aim.nome AS marca
+		FROM admin_integracao_user aiu
+		JOIN admin_integracoes ai ON aiu.integracao_id = ai.id
+		JOIN admin_integracao_marcas aim ON ai.marca_id = aim.id
+		WHERE aiu.user_id = $1
+		ORDER BY ai.id
+	`
+
+	rows, err := r.db.Query(context.Background(), query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao buscar permissões de integração do usuário: %w", err)
+	}
+	defer rows.Close()
+
+	var result []model.IntegracaoUsuarioDetalhada
+	for rows.Next() {
+		var i model.IntegracaoUsuarioDetalhada
+		if err := rows.Scan(&i.ID, &i.Nome, &i.Marca); err != nil {
+			return nil, fmt.Errorf("erro ao escanear resultado: %w", err)
+		}
+		result = append(result, i)
+	}
+
+	return result, nil
+}

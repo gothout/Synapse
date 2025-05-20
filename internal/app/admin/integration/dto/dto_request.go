@@ -84,3 +84,12 @@ type CreateTokenIntegracaoRequest struct {
 	Senha        string `json:"senha" binding:"required,min=6"`
 	IntegracaoID int64  `json:"integracao_id" binding:"required"`
 }
+
+// GetIntegracoesByUserIDURI representa o parâmetro de rota para buscar permissões de integração do usuário
+type GetIntegracoesByUserIDURI struct {
+	UserID int64 `uri:"user_id" binding:"required"`
+}
+
+func (u GetIntegracoesByUserIDURI) ToID() int64 {
+	return u.UserID
+}
