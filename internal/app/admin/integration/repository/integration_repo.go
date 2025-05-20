@@ -64,3 +64,40 @@ func (r *repository) GetAllMarcas() ([]model.Marca, error) {
 
 	return list, nil
 }
+
+// Busca detalhes de X Integracoes para determinada empresa
+func (r *repository) GetIntegracoesDetalhadasByMarcaID(marcaID int64) ([]model.IntegracaoDetalhada, error) {
+	query := `
+		SELECT 
+			i.id AS id_integracao,
+			m.id AS id_marca,
+			i.nome AS nome_integracao,
+			m.nome AS nome_marca
+		FROM admin_integracoes i
+		INNER JOIN admin_integracao_marcas m ON m.id = i.marca_id
+		WHERE i.marca_id = $1
+		ORDER BY i.id
+	`
+
+	rows, err := r.db.Query(context.Background(), query, marcaID)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao buscar integrações detalhadas da marca %d: %w", marcaID, err)
+	}
+	defer rows.Close()
+
+	var list []model.IntegracaoDetalhada
+	for rows.Next() {
+		var item model.IntegracaoDetalhada
+		if err := rows.Scan(
+			&item.IdIntegracao,
+			&item.IdMarca,
+			&item.NomeIntegracao,
+			&item.NomeMarca,
+		); err != nil {
+			return nil, fmt.Errorf("erro ao escanear integração detalhada: %w", err)
+		}
+		list = append(list, item)
+	}
+
+	return list, nil
+}

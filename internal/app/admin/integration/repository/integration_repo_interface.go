@@ -7,4 +7,6 @@ type Repository interface {
 	GetAllIntegrations() ([]integration.Integration, error)
 	//Busca todas as marcas da integração
 	GetAllMarcas() ([]integration.Marca, error)
+	//Buscar todas as integrações baseado no MarcaID
+	GetIntegracoesDetalhadasByMarcaID(marcaID int64) ([]integration.IntegracaoDetalhada, error)
 }

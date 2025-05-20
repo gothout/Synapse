@@ -31,5 +31,6 @@ func RegisterIntegrationRoutes(router *gin.RouterGroup) {
 	{
 		group.GET("/", rbacMiddleware.RequirePermission("admin.integration", "read"), ctrl.GetAllIntegrations)
 		group.GET("/marcas", rbacMiddleware.RequirePermission("admin.integration", "read"), ctrl.GetAllMarcas)
+		group.GET("/marca/detalhada", rbacMiddleware.RequirePermission("admin.integration", "read"), ctrl.GetDetalhadasByMarcaID)
 	}
 }
