@@ -137,6 +137,16 @@ definitions:
       nome:
         type: string
     type: object
+  integration.RemoveIntegracaoUsuarioRequest:
+    properties:
+      integration_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - integration_id
+    - user_id
+    type: object
   rest_err.Causes:
     properties:
       field:
@@ -712,6 +722,41 @@ paths:
       tags:
       - v1 - Integração
   /admin/v1/integration/user:
+    delete:
+      consumes:
+      - application/json
+      description: Remove o vínculo entre um usuário e uma integração existente
+      parameters:
+      - description: Dados para remover vínculo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/integration.RemoveIntegracaoUsuarioRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: sem conteúdo
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      security:
+      - BearerAuth: []
+      summary: Remover vínculo entre usuário e integração
+      tags:
+      - v1 - Integração
     post:
       consumes:
       - application/json

@@ -136,7 +136,6 @@ func (r *repository) ReadByEmail(email string) (*user.User, error) {
 // ReadByID retorna um usuário com base no ID.
 func (r *repository) ReadByID(userID int64) (*user.User, error) {
 	ctx := context.Background()
-
 	query := `
 		SELECT id, nome, email, senha, numero, token, rule_id, enterprise_id, created_at, updated_at
 		FROM admin_user

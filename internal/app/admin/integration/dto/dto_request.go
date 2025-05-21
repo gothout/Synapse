@@ -93,3 +93,9 @@ type GetIntegracoesByUserIDURI struct {
 func (u GetIntegracoesByUserIDURI) ToID() int64 {
 	return u.UserID
 }
+
+// DTO usado para remover integração de um usuario
+type RemoveIntegracaoUsuarioRequest struct {
+	UserID        int64 `json:"user_id" binding:"required"`
+	IntegrationID int64 `json:"integration_id" binding:"required"`
+}

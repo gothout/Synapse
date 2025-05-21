@@ -764,6 +764,61 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Remove o vínculo entre um usuário e uma integração existente",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração"
+                ],
+                "summary": "Remover vínculo entre usuário e integração",
+                "parameters": [
+                    {
+                        "description": "Dados para remover vínculo",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/integration.RemoveIntegracaoUsuarioRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "sem conteúdo",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
             }
         },
         "/admin/v1/integration/user/{user_id}": {
@@ -1508,6 +1563,21 @@ const docTemplate = `{
                 },
                 "nome": {
                     "type": "string"
+                }
+            }
+        },
+        "integration.RemoveIntegracaoUsuarioRequest": {
+            "type": "object",
+            "required": [
+                "integration_id",
+                "user_id"
+            ],
+            "properties": {
+                "integration_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

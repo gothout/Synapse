@@ -1,6 +1,9 @@
 package integration
 
-import integration "Synapse/internal/app/admin/integration/model"
+import (
+	integration "Synapse/internal/app/admin/integration/model"
+	"context"
+)
 
 type Service interface {
 	// Retorna todas as integrações
@@ -21,4 +24,6 @@ type Service interface {
 	CreateTokenIntegracao(email, senha string, integracaoID int64) (string, error)
 	// Busca  os dados de uma integração que o usuário possui
 	GetIntegracoesByUserID(userID int64) ([]integration.IntegracaoUsuarioDetalhada, error)
+	// RemoveIntegrationFromUser remove uma integração do usuário
+	RemoveIntegrationFromUser(ctx context.Context, userID, integrationID int64) error
 }
