@@ -8,7 +8,7 @@ import (
 	controller "Synapse/internal/app/admin/user/controller"
 	repository "Synapse/internal/app/admin/user/repository"
 	service "Synapse/internal/app/admin/user/service"
-	rbac "Synapse/internal/app/middleware/auth"
+	rbac "Synapse/internal/app/middleware/auth/user"
 	db "Synapse/internal/database/db"
 
 	"github.com/gin-gonic/gin"
