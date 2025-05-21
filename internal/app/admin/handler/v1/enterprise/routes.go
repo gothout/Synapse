@@ -6,7 +6,7 @@ import (
 	service "Synapse/internal/app/admin/enterprise/service"
 	adminMiddlewareRepository "Synapse/internal/app/admin/middleware/repository"
 	adminMiddlewareService "Synapse/internal/app/admin/middleware/service"
-	rbac "Synapse/internal/app/middleware/auth"
+	rbac "Synapse/internal/app/middleware/auth/user"
 	db "Synapse/internal/database/db" // adaptável ao seu InitDB()
 
 	"github.com/gin-gonic/gin"

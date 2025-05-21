@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	model "Synapse/internal/app/admin/middleware/model"
 	"context"
 	"errors"
 
@@ -16,7 +17,7 @@ func NewMiddlewareRepository(db *pgxpool.Pool) MiddlewareRepository {
 	return &middlewareRepository{db}
 }
 
-// Retorna o userID associado ao token, se for válido e não expirado
+// GetUserIDByToken retorna o userID associado a um token válido e não expirado
 func (r *middlewareRepository) GetUserIDByToken(ctx context.Context, token string) (int64, error) {
 	var userID int64
 	query := `
@@ -36,7 +37,7 @@ func (r *middlewareRepository) GetUserIDByToken(ctx context.Context, token strin
 	return userID, nil
 }
 
-// Verifica se o user possui permissão para um módulo + ação
+// CheckPermission verifica se o usuário possui permissão para um módulo + ação
 func (r *middlewareRepository) CheckPermission(ctx context.Context, userID int64, module, action string) (bool, error) {
 	query := `
         SELECT 1
@@ -59,4 +60,48 @@ func (r *middlewareRepository) CheckPermission(ctx context.Context, userID int64
 	}
 
 	return true, nil
+}
+
+// FindIntegrationByToken retorna os dados da integração + permissões associadas, com base no token
+func (r *middlewareRepository) FindIntegrationByToken(ctx context.Context, token string) (*model.IntegrationWithPermissions, error) {
+	query := `
+		SELECT i.id, i.nome, t.token, m.nome as permissao
+		FROM admin_integracao_tokens t
+		JOIN admin_integracoes i ON i.id = t.integracao_id
+		JOIN admin_integracao_marcas m ON m.id = i.marca_id
+		WHERE t.token = $1
+	`
+
+	rows, err := r.db.Query(ctx, query, token)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var integration *model.IntegrationWithPermissions
+	perms := []string{}
+
+	for rows.Next() {
+		var id, nome, tkn, permissao string
+		if err := rows.Scan(&id, &nome, &tkn, &permissao); err != nil {
+			return nil, err
+		}
+		if integration == nil {
+			integration = &model.IntegrationWithPermissions{
+				ID:         id,
+				Nome:       nome,
+				Token:      tkn,
+				Permissoes: []string{},
+			}
+		}
+		if permissao != "" {
+			perms = append(perms, permissao)
+		}
+	}
+
+	if integration != nil {
+		integration.Permissoes = perms
+	}
+
+	return integration, nil
 }
