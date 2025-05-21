@@ -16,5 +16,4 @@ func RegisterV1Routes(router *gin.RouterGroup) {
 	rules.RegisterRuleRoutes(v1Group)
 	user.RegisterUserRoutes(v1Group)
 	integration.RegisterIntegrationRoutes(v1Group)
-
 }
