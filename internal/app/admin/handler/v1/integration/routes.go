@@ -43,5 +43,6 @@ func RegisterIntegrationRoutes(router *gin.RouterGroup) {
 		group.POST("/user", rbacMiddleware.RequirePermission("admin.user", "create"), ctrl.CreateIntegracaoUser)
 		group.POST("/token", rbacMiddleware.RequirePermission("admin.integration", "create"), ctrl.CreateTokenIntegracao)
 		group.GET("/user/:user_id", rbacMiddleware.RequirePermission("admin.integration", "read"), ctrl.GetIntegracoesByUserID)
+		group.DELETE("/user", rbacMiddleware.RequirePermission("admin.integration", "remove"), ctrl.DeleteIntegracaoUsuario)
 	}
 }

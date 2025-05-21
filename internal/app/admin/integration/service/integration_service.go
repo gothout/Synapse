@@ -6,6 +6,7 @@ import (
 	repository "Synapse/internal/app/admin/integration/repository"
 	"Synapse/internal/app/admin/pkg/security"
 	userRepo "Synapse/internal/app/admin/user/repository"
+
 	"context"
 	"fmt"
 )
@@ -150,4 +151,32 @@ func (s *service) GetIntegracoesByUserID(userID int64) ([]model.IntegracaoUsuari
 	}
 
 	return s.repo.GetIntegracoesByUserID(userID)
+}
+
+// RemoveIntegration remove uma integração do usuário, após validações
+func (s *service) RemoveIntegrationFromUser(ctx context.Context, userID, integrationID int64) error {
+	// Valida se o usuário existe
+	user, err := s.userRepo.ReadByID(userID)
+	if err != nil {
+		return fmt.Errorf("erro ao buscar usuário: %w", err)
+	}
+	if user == nil {
+		return fmt.Errorf("usuário %d não encontrado", userID)
+	}
+
+	// Valida se a integração existe
+	integration, err := s.repo.GetIntegracaoByID(ctx, integrationID)
+	if err != nil {
+		return fmt.Errorf("erro ao buscar integração: %w", err)
+	}
+	if integration == nil {
+		return fmt.Errorf("integração %d não encontrada", integrationID)
+	}
+
+	// Remove a integração do usuário
+	if err := s.repo.RemoveIntegrationFromUser(ctx, userID, integrationID); err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	return nil
 }

@@ -268,3 +268,20 @@ func (r *repository) GetIntegracoesByUserID(userID int64) ([]model.IntegracaoUsu
 
 	return result, nil
 }
+
+// Remover vinculo de integração com usuario
+func (r *repository) RemoveIntegrationFromUser(ctx context.Context, userID, integrationID int64) error {
+	query := `DELETE FROM admin_integracao_user WHERE user_id = $1 AND integracao_id = $2`
+
+	result, err := r.db.Exec(ctx, query, userID, integrationID)
+	if err != nil {
+		return fmt.Errorf("erro ao remover integração do usuário: %w", err)
+	}
+
+	rowsAffected := result.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("nenhum vínculo encontrado entre user_id %d e integracao_id %d", userID, integrationID)
+	}
+
+	return nil
+}

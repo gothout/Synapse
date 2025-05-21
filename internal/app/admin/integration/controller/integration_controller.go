@@ -393,3 +393,55 @@ func (ic *IntegrationController) GetIntegracoesByUserID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, dto.FromIntegracaoUsuarioModelList(integs))
 }
+
+// DeleteIntegracaoUsuario godoc
+// @Summary      Remover vínculo entre usuário e integração
+// @Description  Remove o vínculo entre um usuário e uma integração existente
+// @Tags         v1 - Integração
+// @Security     BearerAuth
+// @Accept       json
+// @Produce      json
+// @Param        body body dto.RemoveIntegracaoUsuarioRequest true "Dados para remover vínculo"
+// @Success      204  {string} string "sem conteúdo"
+// @Failure      400  {object} rest_err.RestErr
+// @Failure      404  {object} rest_err.RestErr
+// @Failure      500  {object} rest_err.RestErr
+// @Router       /admin/v1/integration/user [delete]
+func (ic *IntegrationController) DeleteIntegracaoUsuario(ctx *gin.Context) {
+	var req dto.RemoveIntegracaoUsuarioRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, rest_err.NewBadRequestValidationError("Erro ao processar JSON", []rest_err.Causes{
+			rest_err.NewCause("json", err.Error()),
+		}))
+		return
+	}
+
+	if err := binding.ValidateRemoveIntegracaoUsuario(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, rest_err.NewBadRequestValidationError("Erro de validação dos dados", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		}))
+		return
+	}
+
+	if err := ic.service.RemoveIntegrationFromUser(ctx, req.UserID, req.IntegrationID); err != nil {
+		switch {
+		case strings.Contains(err.Error(), "usuário"):
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Usuário não encontrado"))
+			return
+		case strings.Contains(err.Error(), "integração"):
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Integração não encontrada"))
+			return
+		case strings.Contains(err.Error(), "nenhum vínculo encontrado"):
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Vínculo não encontrado"))
+			return
+		default:
+			ctx.JSON(http.StatusInternalServerError, rest_err.NewInternalServerError("Erro ao remover vínculo usuário ↔ integração", []rest_err.Causes{
+				rest_err.NewCause("service", err.Error()),
+			}))
+			return
+		}
+	}
+
+	ctx.Status(http.StatusNoContent)
+}

@@ -81,3 +81,14 @@ func ValidateGetIntegracoesByUserIDURI(input dto.GetIntegracoesByUserIDURI) erro
 	}
 	return nil
 }
+
+// ValidateRemoveIntegracaoUsuario valida o JSON para remover uma integração de um usuário
+func ValidateRemoveIntegracaoUsuario(input dto.RemoveIntegracaoUsuarioRequest) error {
+	if input.UserID <= 0 {
+		return errors.New("user_id inválido ou ausente")
+	}
+	if input.IntegrationID <= 0 {
+		return errors.New("integracao_id inválido ou ausente")
+	}
+	return nil
+}
