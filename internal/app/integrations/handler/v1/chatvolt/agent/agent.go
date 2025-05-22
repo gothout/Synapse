@@ -7,6 +7,7 @@ import (
 	service "Synapse/internal/app/integrations/chatvolt/agent/service"
 
 	adminIntegrationRepo "Synapse/internal/app/admin/integration/repository"
+	adminUserRepo "Synapse/internal/app/admin/user/repository"
 	db "Synapse/internal/database/db"
 
 	middlewareRepo "Synapse/internal/app/admin/middleware/repository"
@@ -23,13 +24,14 @@ func RegisterChatvoltRoutes(router *gin.RouterGroup) {
 	// Repositórios
 	agentRepo := repository.NewAgentRepository(dbConn)
 	integrationRepo := adminIntegrationRepo.NewIntegrationRepository(dbConn)
+	userRepo := adminUserRepo.NewRepository(dbConn)
 	middlewareRepo := middlewareRepo.NewMiddlewareRepository(dbConn)
 
 	// API externa da Chatvolt
 	chatvoltAPI := api.NewChatvoltAPI()
 
 	// Serviços
-	svc := service.NewAgentService(chatvoltAPI, agentRepo, integrationRepo)
+	svc := service.NewAgentService(chatvoltAPI, agentRepo, integrationRepo, userRepo)
 	middlewareSvc := middlewareService.NewMiddlewareService(middlewareRepo)
 
 	// Middleware RBAC de integração
