@@ -274,7 +274,7 @@ func (ic *IntegrationController) CreateIntegracaoUser(ctx *gin.Context) {
 	if err != nil {
 		// Tratamento específico baseado na mensagem do service
 		switch {
-		case strings.Contains(err.Error(), "usuário com ID"):
+		case strings.Contains(err.Error(), "usuário nao encontrado"):
 			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Usuário não encontrado"))
 			return
 		case strings.Contains(err.Error(), "integração com ID"):
@@ -282,6 +282,9 @@ func (ic *IntegrationController) CreateIntegracaoUser(ctx *gin.Context) {
 			return
 		case strings.Contains(err.Error(), "violates unique constraint"): // opcional
 			ctx.JSON(http.StatusForbidden, rest_err.NewForbiddenError("Este vínculo já existe"))
+			return
+		case strings.Contains(err.Error(), "integração não encontrada"): // opcional
+			ctx.JSON(http.StatusNotFound, rest_err.NewNotFoundError("Integração não encontrada"))
 			return
 		default:
 			ctx.JSON(http.StatusInternalServerError, rest_err.NewInternalServerError("Erro ao criar vínculo usuário ↔ integração", []rest_err.Causes{

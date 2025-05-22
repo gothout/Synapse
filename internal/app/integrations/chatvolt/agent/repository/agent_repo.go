@@ -1,8 +1,10 @@
 package agent
 
 import (
+	agent "Synapse/internal/app/integrations/chatvolt/agent/model"
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -33,4 +35,26 @@ func (r *agentRepo) SalvarConfiguracao(ctx context.Context, integracaoID int64, 
 
 	_, err = r.db.Exec(ctx, query, integracaoID, enterprise_id, jsonData)
 	return err
+}
+
+// BuscarConfiguracaoPorID busca as configurações de um agente armazenadas em JSON no banco, dado o ID.
+func (r *agentRepo) BuscarConfiguracaoPorID(ctx context.Context, id int64) (agent.ConfiguracaoAgent, error) {
+	var jsonConfig []byte
+
+	query := `SELECT configuracoes FROM integracoes_configuracoes WHERE id = $1`
+	err := r.db.QueryRow(ctx, query, id).Scan(&jsonConfig)
+	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return agent.ConfiguracaoAgent{}, fmt.Errorf("configuração não encontrada")
+		}
+		return agent.ConfiguracaoAgent{}, fmt.Errorf("erro ao buscar configuração no banco: %w", err)
+	}
+
+	var config agent.ConfiguracaoAgent
+	if err := json.Unmarshal(jsonConfig, &config); err != nil {
+		return agent.ConfiguracaoAgent{}, fmt.Errorf("erro ao fazer parse do JSON de configuração: %w", err)
+	}
+
+	config.ID = id
+	return config, nil
 }

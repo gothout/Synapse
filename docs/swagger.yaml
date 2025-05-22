@@ -29,6 +29,37 @@ definitions:
         description: Token usado na integração
         type: string
     type: object
+  agent.AgentMessageRequestDTO:
+    properties:
+      agent_id:
+        type: integer
+      conversationId:
+        type: string
+      query:
+        type: string
+      streaming:
+        description: opcional, mas pode ser fixo como false se preferir
+        type: boolean
+      visitorId:
+        type: string
+    required:
+    - agent_id
+    - query
+    type: object
+  agent.AgentMessageResponseDTO:
+    properties:
+      answer:
+        type: string
+      conversationId:
+        type: string
+      messageId:
+        type: string
+      metadata: {}
+      sources:
+        description: ou defina um struct específico, se quiser
+      visitorId:
+        type: string
+    type: object
   enterprise.CreateEnterpriseDTO:
     properties:
       cnpj:
@@ -1205,6 +1236,46 @@ paths:
           schema:
             $ref: '#/definitions/rest_err.RestErr'
       summary: Cadastrar configuração de agente Chatvolt
+      tags:
+      - v1 - Integração Chatvolt
+  /integrations/v1/chatvolt/agent/message:
+    post:
+      consumes:
+      - application/json
+      description: Envia uma mensagem ao agente da Chatvolt e retorna o conversationId
+        para continuidade da conversa
+      parameters:
+      - description: 'Token de integração no formato: Bearer {token}'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Dados de entrada da mensagem para o agente
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/agent.AgentMessageRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/agent.AgentMessageResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Enviar mensagem para agente Chatvolt
       tags:
       - v1 - Integração Chatvolt
 securityDefinitions:
