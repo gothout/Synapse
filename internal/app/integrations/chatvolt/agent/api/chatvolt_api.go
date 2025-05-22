@@ -19,6 +19,7 @@ func NewChatvoltAPI() ChatvoltAPI {
 	return &chatvoltAPI{}
 }
 
+// Busca agente pelo agentID da chatvolt.
 func (c *chatvoltAPI) BuscarAgente(ctx context.Context, agentID, token string) (agent.Agente, error) {
 	url := fmt.Sprintf("https://api.chatvolt.ai/agents/%s", agentID)
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
