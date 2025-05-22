@@ -10,7 +10,7 @@ import (
 
 // MiddlewareCors retorna o middleware de CORS configurado
 func MiddlewareCors() gin.HandlerFunc {
-	origins := []string{"http://localhost:8081"}
+	origins := []string{"http://localhost:5173"}
 	if os.Getenv("ENV") == "PROD" {
 		origins = []string{"https://ws.wonit.net.br"}
 	}

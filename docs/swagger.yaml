@@ -1,4 +1,34 @@
 definitions:
+  agent.AgentConfigRequestDTO:
+    properties:
+      agent_id:
+        description: ID do agente na Chatvolt
+        type: string
+      token_chatvolt:
+        description: Token para autenticação na API Chatvolt
+        type: string
+    required:
+    - agent_id
+    - token_chatvolt
+    type: object
+  agent.AgentConfigResponseDTO:
+    properties:
+      agent_id:
+        description: ID do agente
+        type: string
+      descricao:
+        description: Descrição do agente
+        type: string
+      nome:
+        description: Nome do agente
+        type: string
+      organization_chatvolt:
+        description: ID da organização na Chatvolt
+        type: string
+      token_chatvolt:
+        description: Token usado na integração
+        type: string
+    type: object
   enterprise.CreateEnterpriseDTO:
     properties:
       cnpj:
@@ -1137,6 +1167,46 @@ paths:
       summary: Gerar token JWT
       tags:
       - v1 - Usuário
+  /integrations/v1/chatvolt/agent/config:
+    post:
+      consumes:
+      - application/json
+      description: Registra os dados de um agente da Chatvolt com base em ID, token
+        e integração existente
+      parameters:
+      - description: 'Token de integração no formato: Bearer {token}'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Dados de entrada da configuração
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/agent.AgentConfigRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/agent.AgentConfigResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Cadastrar configuração de agente Chatvolt
+      tags:
+      - v1 - Integração Chatvolt
 securityDefinitions:
   BearerAuth:
     description: 'Forneça o token no formato: Bearer <token>'
