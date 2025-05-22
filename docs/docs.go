@@ -1413,6 +1413,65 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/integrations/v1/chatvolt/agent/message": {
+            "post": {
+                "description": "Envia uma mensagem ao agente da Chatvolt e retorna o conversationId para continuidade da conversa",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração Chatvolt"
+                ],
+                "summary": "Enviar mensagem para agente Chatvolt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token de integração no formato: Bearer {token}",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados de entrada da mensagem para o agente",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/agent.AgentMessageRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/agent.AgentMessageResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1454,6 +1513,52 @@ const docTemplate = `{
                 },
                 "token_chatvolt": {
                     "description": "Token usado na integração",
+                    "type": "string"
+                }
+            }
+        },
+        "agent.AgentMessageRequestDTO": {
+            "type": "object",
+            "required": [
+                "agent_id",
+                "query"
+            ],
+            "properties": {
+                "agent_id": {
+                    "type": "integer"
+                },
+                "conversationId": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "string"
+                },
+                "streaming": {
+                    "description": "opcional, mas pode ser fixo como false se preferir",
+                    "type": "boolean"
+                },
+                "visitorId": {
+                    "type": "string"
+                }
+            }
+        },
+        "agent.AgentMessageResponseDTO": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "conversationId": {
+                    "type": "string"
+                },
+                "messageId": {
+                    "type": "string"
+                },
+                "metadata": {},
+                "sources": {
+                    "description": "ou defina um struct específico, se quiser"
+                },
+                "visitorId": {
                     "type": "string"
                 }
             }

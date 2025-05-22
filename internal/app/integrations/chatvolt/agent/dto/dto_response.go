@@ -21,3 +21,25 @@ func FromModel(agente model.Agente) AgentConfigResponseDTO {
 		OrganizationChatVolt: agente.OrganizationChatVoltID,
 	}
 }
+
+// AgentMessageResponse representa os dados que serão retornados quando uma mensagem for enviada ao agente da Chatvolt.
+type AgentMessageResponseDTO struct {
+	Answer         string      `json:"answer"`
+	ConversationID string      `json:"conversationId"`
+	VisitorID      string      `json:"visitorId"`
+	MessageID      string      `json:"messageId"`
+	Sources        interface{} `json:"sources,omitempty"` // ou defina um struct específico, se quiser
+	Metadata       interface{} `json:"metadata,omitempty"`
+}
+
+// FromModel transforma o modelo AgentMessageResponse em um DTO de resposta para o cliente.
+func FromModelResponse(resp model.AgentMessageResponse) AgentMessageResponseDTO {
+	return AgentMessageResponseDTO{
+		Answer:         resp.Answer,
+		ConversationID: resp.ConversationID,
+		VisitorID:      resp.VisitorID,
+		MessageID:      resp.MessageID,
+		Sources:        resp.Sources,
+		Metadata:       resp.Metadata,
+	}
+}

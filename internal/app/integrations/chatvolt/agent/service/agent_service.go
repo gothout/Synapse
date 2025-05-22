@@ -5,6 +5,7 @@ import (
 	contextModelMiddleware "Synapse/internal/app/admin/middleware/model"
 	userRepo "Synapse/internal/app/admin/user/repository"
 	api "Synapse/internal/app/integrations/chatvolt/agent/api"
+	agent "Synapse/internal/app/integrations/chatvolt/agent/model"
 	repository "Synapse/internal/app/integrations/chatvolt/agent/repository"
 	print "Synapse/internal/configuration/logger/log_print"
 	"context"
@@ -88,4 +89,17 @@ func (s *agentService) BuscarESalvarConfiguracao(ctx context.Context, agentID st
 	}
 
 	return nil
+}
+
+func (s *agentService) EnviaMensagemParaAgente(ctx context.Context, agentID int64, message string, conversationId string) (agent.AgentMessageResponse, error) {
+	// Pelo ID do agente, devo buscar nas configuracoes o token da Chatvolt e id de agente, lembrando que no banco e salvo como JSON todos os dados de configuracao.
+
+	// Busca agente...
+	agente, err := s.repo.BuscarConfiguracaoPorID(ctx, agentID)
+	if err != nil {
+		print.Error(err)
+		return agent.AgentMessageResponse{}, err
+	}
+
+	return s.api.EnviarMensagem(ctx, agente.AgentID, agente.TokenChatVolt, message, conversationId)
 }

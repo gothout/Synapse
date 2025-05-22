@@ -26,3 +26,28 @@ func ValidateAgentConfigInputDTO(input dto.AgentConfigRequestDTO) error {
 
 	return nil
 }
+
+// ValidateAgentMessageRequestDTO valida os dados recebidos para envio de mensagem ao agente.
+func ValidateAgentMessageRequestDTO(input dto.AgentMessageRequestDTO) error {
+	if input.AgentID <= 0 {
+		return errors.New("o ID do agente deve ser maior que zero")
+	}
+
+	if strings.TrimSpace(input.Query) == "" {
+		return errors.New("a mensagem (query) é obrigatória")
+	}
+
+	if len(input.Query) < 3 {
+		return errors.New("a mensagem é muito curta")
+	}
+
+	if input.ConversationID != "" && len(input.ConversationID) < 10 {
+		return errors.New("o conversationId parece inválido")
+	}
+
+	if input.VisitorID != "" && len(input.VisitorID) < 5 {
+		return errors.New("o visitorId parece inválido")
+	}
+
+	return nil
+}
