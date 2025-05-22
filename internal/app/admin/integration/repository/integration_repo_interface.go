@@ -30,4 +30,6 @@ type Repository interface {
 	GetIntegracoesByUserID(userID int64) ([]integration.IntegracaoUsuarioDetalhada, error)
 	// Remover vinculo de integração com usuario
 	RemoveIntegrationFromUser(ctx context.Context, userID, integrationID int64) error
+	// Retorna ID de usuario por token
+	GetUserIDByToken(token string) (int64, error)
 }

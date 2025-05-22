@@ -3,6 +3,7 @@ package agent
 import (
 	integrationRepo "Synapse/internal/app/admin/integration/repository"
 	contextModelMiddleware "Synapse/internal/app/admin/middleware/model"
+	userRepo "Synapse/internal/app/admin/user/repository"
 	api "Synapse/internal/app/integrations/chatvolt/agent/api"
 	repository "Synapse/internal/app/integrations/chatvolt/agent/repository"
 	print "Synapse/internal/configuration/logger/log_print"
@@ -16,6 +17,7 @@ type agentService struct {
 	api             api.ChatvoltAPI
 	repo            repository.AgentRepository
 	integrationRepo integrationRepo.Repository
+	userRepo        userRepo.Repository
 }
 
 // NewAgentService cria uma nova instância do service e injeta dependências.
@@ -23,11 +25,13 @@ func NewAgentService(
 	api api.ChatvoltAPI,
 	repo repository.AgentRepository,
 	integrationRepo integrationRepo.Repository,
+	userRepo userRepo.Repository,
 ) AgentService {
 	return &agentService{
 		api:             api,
 		repo:            repo,
 		integrationRepo: integrationRepo,
+		userRepo:        userRepo,
 	}
 }
 
@@ -40,6 +44,7 @@ func (s *agentService) BuscarESalvarConfiguracao(ctx context.Context, agentID st
 	}
 
 	integration, ok := value.(*contextModelMiddleware.IntegrationWithPermissions)
+	fmt.Println(integration)
 	if !ok {
 		return fmt.Errorf("formato inválido para integração no contexto")
 	}
@@ -64,7 +69,21 @@ func (s *agentService) BuscarESalvarConfiguracao(ctx context.Context, agentID st
 		return fmt.Errorf("ID da integração inválido: %w", err)
 	}
 
-	if err := s.repo.SalvarConfiguracao(ctx, integrationInt, config); err != nil {
+	// Busca ID de usuario pelo token
+	userID, err := s.integrationRepo.GetUserIDByToken(integration.Token)
+	if err != nil {
+		print.Error(err)
+		return fmt.Errorf("%w", err)
+	}
+
+	// Busca ID de empresa pelo UserID
+	enterpriseID, err := s.userRepo.ReadByID(userID)
+	if err != nil {
+		print.Error(err)
+		return fmt.Errorf("%w", err)
+	}
+
+	if err := s.repo.SalvarConfiguracao(ctx, integrationInt, int64(enterpriseID.EnterpriseID), config); err != nil {
 		return fmt.Errorf("erro ao salvar configuração: %w", err)
 	}
 

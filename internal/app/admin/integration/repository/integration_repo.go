@@ -285,3 +285,19 @@ func (r *repository) RemoveIntegrationFromUser(ctx context.Context, userID, inte
 
 	return nil
 }
+
+// Retorna ID de usuario por token
+func (r *repository) GetUserIDByToken(token string) (int64, error) {
+	query := `
+		SELECT user_id
+		FROM admin_integracao_tokens
+		WHERE token = $1
+	`
+
+	var userID int64
+	err := r.db.QueryRow(context.Background(), query, token).Scan(&userID)
+	if err != nil {
+		return 0, fmt.Errorf("erro ao buscar user_id pelo token: %w", err)
+	}
+	return userID, nil
+}
