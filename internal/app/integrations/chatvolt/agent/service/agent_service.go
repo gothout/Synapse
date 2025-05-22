@@ -1,0 +1,72 @@
+package agent
+
+import (
+	integrationRepo "Synapse/internal/app/admin/integration/repository"
+	contextModelMiddleware "Synapse/internal/app/admin/middleware/model"
+	api "Synapse/internal/app/integrations/chatvolt/agent/api"
+	repository "Synapse/internal/app/integrations/chatvolt/agent/repository"
+	print "Synapse/internal/configuration/logger/log_print"
+	"context"
+	"fmt"
+	"strconv"
+)
+
+// agentService implementa a interface AgentService.
+type agentService struct {
+	api             api.ChatvoltAPI
+	repo            repository.AgentRepository
+	integrationRepo integrationRepo.Repository
+}
+
+// NewAgentService cria uma nova instância do service e injeta dependências.
+func NewAgentService(
+	api api.ChatvoltAPI,
+	repo repository.AgentRepository,
+	integrationRepo integrationRepo.Repository,
+) AgentService {
+	return &agentService{
+		api:             api,
+		repo:            repo,
+		integrationRepo: integrationRepo,
+	}
+}
+
+// BuscarESalvarConfiguracao busca o agente da Chatvolt e salva sua configuração
+// após validar se a integração informada existe no sistema.
+func (s *agentService) BuscarESalvarConfiguracao(ctx context.Context, agentID string, token string) error {
+	value := ctx.Value("integration")
+	if value == nil {
+		return fmt.Errorf("integração não encontrada no contexto")
+	}
+
+	integration, ok := value.(*contextModelMiddleware.IntegrationWithPermissions)
+	if !ok {
+		return fmt.Errorf("formato inválido para integração no contexto")
+	}
+
+	// Busca agente...
+	agente, err := s.api.BuscarAgente(ctx, agentID, token)
+	if err != nil {
+		print.Error(err)
+		return fmt.Errorf("%w", err)
+	}
+
+	config := map[string]interface{}{
+		"agent_id":             agente.Id,
+		"nome":                 agente.Nome,
+		"descricao":            agente.Descricao,
+		"token_chatvolt":       agente.TokenOrganization,
+		"organizationChatVolt": agente.OrganizationChatVoltID,
+	}
+
+	integrationInt, err := strconv.ParseInt(integration.ID, 10, 64)
+	if err != nil {
+		return fmt.Errorf("ID da integração inválido: %w", err)
+	}
+
+	if err := s.repo.SalvarConfiguracao(ctx, integrationInt, config); err != nil {
+		return fmt.Errorf("erro ao salvar configuração: %w", err)
+	}
+
+	return nil
+}

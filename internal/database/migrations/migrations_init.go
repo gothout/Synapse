@@ -21,6 +21,7 @@ func RunAllMigrations(db *pgxpool.Pool) error {
 		"02_rules",
 		"03_user",
 		"04_integration",
+		"05_integration_config",
 	}
 
 	for _, folder := range migrationOrder {
