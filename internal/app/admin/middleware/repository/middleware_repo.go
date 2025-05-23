@@ -105,3 +105,44 @@ func (r *middlewareRepository) FindIntegrationByToken(ctx context.Context, token
 
 	return integration, nil
 }
+
+// CheckEnterpriseToken valida se o token fornecido está associado a um usuário e se esse usuário tem permissão
+// para a integração solicitada, além de verificar se a empresa desse usuário também está associada à integração.
+func (r *middlewareRepository) CheckEnterpriseToken(ctx context.Context, token string, integrationID string) (*model.IntegrationWithPermissions, error) {
+	query := `
+		SELECT 
+			i.id, 
+			i.nome,
+			t.token,
+			u.enterprise_id,
+			u.id as user_id
+		FROM admin_integracao_tokens t
+		JOIN admin_user u ON u.id = t.user_id
+		JOIN admin_integracoes i ON i.id = t.integracao_id
+		JOIN admin_integracao_user iu ON iu.user_id = u.id AND iu.integracao_id = i.id
+		JOIN admin_integracao_enterprise ie ON ie.enterprise_id = u.enterprise_id AND ie.integracao_id = i.id
+		WHERE t.token = $1 AND i.id = $2
+		LIMIT 1
+	`
+
+	var integration model.IntegrationWithPermissions
+	var enterpriseID, userID int64
+
+	err := r.db.QueryRow(ctx, query, token, integrationID).Scan(
+		&integration.ID,
+		&integration.Nome,
+		&integration.Token,
+		&enterpriseID,
+		&userID,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, errors.New("token inválido ou sem permissão para esta integração")
+		}
+		return nil, err
+	}
+
+	integration.EnterpriseID = enterpriseID
+	integration.UserID = userID
+	return &integration, nil
+}

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	adminService "Synapse/internal/app/admin/middleware/service"
@@ -18,14 +19,13 @@ func NewIntegrationRbacMiddleware(service adminService.MiddlewareService) *Integ
 	return &IntegrationRbacMiddleware{Service: service}
 }
 
-func (m *IntegrationRbacMiddleware) RequireIntegrationPermission(requiredScope string) gin.HandlerFunc {
+func (m *IntegrationRbacMiddleware) RequireIntegrationPermission(integrationID string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
 		token = strings.TrimSpace(strings.TrimPrefix(token, "Bearer"))
 
 		if token == "" {
-			err := rest_err.NewForbiddenError("Token de integração ausente")
-			c.JSON(err.Code, err)
+			c.JSON(403, gin.H{"error": "Token de integração ausente"})
 			c.Abort()
 			return
 		}
@@ -38,22 +38,21 @@ func (m *IntegrationRbacMiddleware) RequireIntegrationPermission(requiredScope s
 			c.Abort()
 			return
 		}
-
-		// Comparação baseada no nome da integração
-		if normalize(integration.Nome) != normalize(requiredScope) {
-			res := rest_err.NewForbiddenError("Token de integração inválido ou não autorizado")
-			//res := rest_err.NewForbiddenError("Integração sem permissão para: " + requiredScope)
-			c.JSON(res.Code, res)
+		// Valida o token e a permissão da empresa para a integração
+		integration, err = m.Service.CheckEnterpriseToken(ctx, token, integration.ID)
+		fmt.Print(integration)
+		if err != nil || integration == nil {
+			c.JSON(403, gin.H{"error": "Token inválido ou sem permissão para essa integração"})
 			c.Abort()
 			return
 		}
 
-		// ✅ Permissão concedida com base no nome da integração
+		// ✅ Guarda os dados da integração no contexto
 		c.Set("integration", integration)
 		c.Next()
 	}
 }
 
-func normalize(s string) string {
-	return strings.ToLower(strings.TrimSpace(s))
-}
+///func normalize(s string) string {
+//	return strings.ToLower(strings.TrimSpace(s))
+//}
