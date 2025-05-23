@@ -59,3 +59,11 @@ func ValidateGetConfiguracaoAgentRequestDTO(input dto.GetConfiguracaoAgentReques
 	}
 	return nil
 }
+
+// ValidatePutConfiguracaoAgentRequestDTO
+func ValidatePutConfiguracaoAgentRequestDTO(input dto.PutConfiguracoesAgentRequestDTO) error {
+	if input.AgentID <= 0 {
+		return errors.New("o agent_id deve ser maior que zero")
+	}
+	return nil
+}

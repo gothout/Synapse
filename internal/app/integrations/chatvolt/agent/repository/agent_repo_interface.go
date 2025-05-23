@@ -10,4 +10,6 @@ type AgentRepository interface {
 	SalvarConfiguracao(ctx context.Context, integracaoID int64, enterprise_id int64, config map[string]interface{}) error
 	// Busca configuracoes de agente por ID do banco.
 	BuscarConfiguracaoPorID(ctx context.Context, id int64) (agent.ConfiguracaoAgent, error)
+	// Atualiza configurações de agente por ID
+	AtualizarConfiguracaoPorID(ctx context.Context, id int64, config map[string]interface{}) error
 }

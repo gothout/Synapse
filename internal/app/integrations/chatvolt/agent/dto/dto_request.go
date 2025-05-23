@@ -20,3 +20,8 @@ type AgentMessageRequestDTO struct {
 type GetConfiguracaoAgentRequestDTO struct {
 	AgentID int64 `uri:"agent_id" binding:"required,min=1"`
 }
+
+// PutConfiguracoesAgentRequestDTO representa o ID recebido de agente para atualizar X agente baseado na API
+type PutConfiguracoesAgentRequestDTO struct {
+	AgentID int64 `uri:"agent_id" binding:"required,min=1"`
+}
