@@ -1355,6 +1355,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/integrations/v1/chatvolt/agent": {
+            "get": {
+                "description": "Retorna todos os agentes associados a uma empresa específica",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração Chatvolt"
+                ],
+                "summary": "Listar agentes por empresa",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token de integração no formato: Bearer {token}",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/agent.ListConfiguracoesAgentResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
+            }
+        },
         "/integrations/v1/chatvolt/agent/config": {
             "post": {
                 "description": "Registra os dados de um agente da Chatvolt com base em ID, token e integração existente",
@@ -1521,6 +1562,58 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Remove a configuração salva de um agente da Chatvolt com base no ID informado na URI",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração Chatvolt"
+                ],
+                "summary": "Remover configuração do agente Chatvolt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token de integração no formato: Bearer {token}",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID do agente registrado no sistema",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Remoção bem-sucedida, sem conteúdo"
+                    },
+                    "400": {
+                        "description": "AgentID inválido ou erro de validação",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Configuração do agente não encontrada",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno ao remover configuração",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
             }
         },
         "/integrations/v1/chatvolt/agent/message": {
@@ -1668,6 +1761,23 @@ const docTemplate = `{
                     "description": "ou defina um struct específico, se quiser"
                 },
                 "visitorId": {
+                    "type": "string"
+                }
+            }
+        },
+        "agent.ListConfiguracoesAgentResponseDTO": {
+            "type": "object",
+            "properties": {
+                "agent_id": {
+                    "type": "string"
+                },
+                "descricao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
                     "type": "string"
                 }
             }

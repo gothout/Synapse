@@ -45,7 +45,6 @@ func (s *agentService) BuscarESalvarConfiguracao(ctx context.Context, agentID st
 	}
 
 	integration, ok := value.(*contextModelMiddleware.IntegrationWithPermissions)
-	fmt.Println(integration)
 	if !ok {
 		return fmt.Errorf("formato inválido para integração no contexto")
 	}
@@ -154,4 +153,56 @@ func (s *agentService) AtualizarAgentePelaAPI(ctx context.Context, agentID int64
 	}
 
 	return nil
+}
+
+// BuscarAgentesPorEmpresaID busca todos os agentes vinculados à empresa da integração atual.
+func (s *agentService) BuscarAgentesPorEmpresaID(ctx context.Context) ([]agent.ConfiguracaoAgent, error) {
+	value := ctx.Value("integration")
+	if value == nil {
+		return nil, fmt.Errorf("integração não encontrada no contexto")
+	}
+
+	integration, ok := value.(*contextModelMiddleware.IntegrationWithPermissions)
+	if !ok {
+		return nil, fmt.Errorf("formato inválido para integração no contexto")
+	}
+
+	return s.repo.BuscarAgentesPorEmpresaID(ctx, integration.EnterpriseID)
+}
+
+// Remove configuração baseado no ID de integraçãoo
+func (s *agentService) DeleteConfigByID(ctx context.Context, id int64) error {
+	value := ctx.Value("integration")
+	// Buscando configurações do ID
+	config, err := s.repo.BuscarConfiguracaoPorID(ctx, id)
+	if err != nil {
+		print.Error(err)
+		return err
+	}
+
+	if config.ID == 0 {
+		print.Error(err)
+		return fmt.Errorf("agente não encontrado")
+	}
+
+	EnterpriseID, err := s.repo.BuscaEmpresaDeAgenteByAgentId(ctx, config.ID)
+	if err != nil {
+		print.Error(err)
+		return err
+	}
+
+	// Posso apenas remover a configuração do agente, se ele for pertencente a empresa de quem solicitou a remoção
+	// Pego a empresa do user pelo userID
+	userID, err := s.userRepo.ReadByID(value.(*contextModelMiddleware.IntegrationWithPermissions).UserID)
+	if err != nil {
+		print.Error(err)
+		return err
+	}
+
+	if userID.EnterpriseID != EnterpriseID {
+		print.Error(err)
+		return fmt.Errorf("configuração não encontrada")
+	}
+
+	return s.repo.DeleteConfigByID(ctx, id, EnterpriseID)
 }

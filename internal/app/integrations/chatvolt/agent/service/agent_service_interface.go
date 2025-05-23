@@ -12,4 +12,8 @@ type AgentService interface {
 	BuscarConfiguracaoPorID(ctx context.Context, id int64) (agent.ConfiguracaoAgent, error)
 	EnviaMensagemParaAgente(ctx context.Context, agentID int64, message string, conversationId string) (agent.AgentMessageResponse, error)
 	AtualizarAgentePelaAPI(ctx context.Context, agentID int64) error
+	// Listar agentes por empresaID
+	BuscarAgentesPorEmpresaID(ctx context.Context) ([]agent.ConfiguracaoAgent, error)
+	// Remove configuração baseado no ID de integração
+	DeleteConfigByID(ctx context.Context, id int64) error
 }

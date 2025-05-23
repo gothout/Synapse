@@ -67,3 +67,11 @@ func ValidatePutConfiguracaoAgentRequestDTO(input dto.PutConfiguracoesAgentReque
 	}
 	return nil
 }
+
+// ValidateRemoveConfiguracaoAgentRequestDTO valida os dados recebidos para remover as configurações de agente
+func ValidateRemoveConfiguracaoAgentRequestDTO(input dto.RemoveConfiguracoesAgentRequestDTO) error {
+	if input.AgentID <= 0 {
+		return errors.New("o agent_id deve ser maior que zero")
+	}
+	return nil
+}

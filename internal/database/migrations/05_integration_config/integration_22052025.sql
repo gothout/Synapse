@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS integracoes_configuracoes (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    CONSTRAINT unique_integracao_config UNIQUE (integracao_id)
+    CONSTRAINT unique_integracao_config UNIQUE (configuracoes)
 );

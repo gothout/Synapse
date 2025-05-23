@@ -25,3 +25,8 @@ type GetConfiguracaoAgentRequestDTO struct {
 type PutConfiguracoesAgentRequestDTO struct {
 	AgentID int64 `uri:"agent_id" binding:"required,min=1"`
 }
+
+// RemoveConfiguracoesAgentRequestDTO representa o ID recebido de agente para remover agente
+type RemoveConfiguracoesAgentRequestDTO struct {
+	AgentID int64 `uri:"agent_id" binding:"required,min=1"`
+}
