@@ -43,6 +43,7 @@ func RegisterChatvoltRoutes(router *gin.RouterGroup) {
 	// Grupo: /agent
 	group := router.Group("/agent")
 	{
+		group.GET("/config/:agent_id", rbacMiddleware.RequireIntegrationPermission("agent"), ctrl.GetAgentConfigByID)
 		group.POST("/config", rbacMiddleware.RequireIntegrationPermission("agent"), ctrl.PostAgentConfig)
 		group.POST("/message", rbacMiddleware.RequireIntegrationPermission("agent"), ctrl.PostAgentMessage)
 	}

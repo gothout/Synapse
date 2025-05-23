@@ -1238,6 +1238,45 @@ paths:
       summary: Cadastrar configuração de agente Chatvolt
       tags:
       - v1 - Integração Chatvolt
+  /integrations/v1/chatvolt/agent/config/{agent_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna os dados públicos da configuração de um agente da Chatvolt
+        por ID
+      parameters:
+      - description: 'Token de integração no formato: Bearer {token}'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID do agente registrado no sistema
+        in: path
+        name: agent_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/agent.AgentConfigResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Buscar configuração do agente Chatvolt
+      tags:
+      - v1 - Integração Chatvolt
   /integrations/v1/chatvolt/agent/message:
     post:
       consumes:

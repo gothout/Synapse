@@ -9,5 +9,6 @@ import (
 type AgentService interface {
 	// BuscarESalvarConfiguracao busca o agente da Chatvolt e salva sua configuração
 	BuscarESalvarConfiguracao(ctx context.Context, agentID string, token string) error
+	BuscarConfiguracaoPorID(ctx context.Context, id int64) (agent.ConfiguracaoAgent, error)
 	EnviaMensagemParaAgente(ctx context.Context, agentID int64, message string, conversationId string) (agent.AgentMessageResponse, error)
 }

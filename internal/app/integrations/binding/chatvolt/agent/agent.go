@@ -51,3 +51,11 @@ func ValidateAgentMessageRequestDTO(input dto.AgentMessageRequestDTO) error {
 
 	return nil
 }
+
+// ValidateGetConfiguracaoAgentRequestDTO valida os dados recebidos para buscar configurações do agente.
+func ValidateGetConfiguracaoAgentRequestDTO(input dto.GetConfiguracaoAgentRequestDTO) error {
+	if input.AgentID <= 0 {
+		return errors.New("o agent_id deve ser maior que zero")
+	}
+	return nil
+}
