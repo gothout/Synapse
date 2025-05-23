@@ -43,3 +43,19 @@ func FromModelResponse(resp model.AgentMessageResponse) AgentMessageResponseDTO 
 		Metadata:       resp.Metadata,
 	}
 }
+
+type ConfiguracaoAgentResponseDTO struct {
+	ID        int64  `json:"id"`
+	AgentID   string `json:"agent_id"`
+	Nome      string `json:"nome"`
+	Descricao string `json:"descricao"`
+}
+
+func ToFormConfiguracaoAgentResponse(model model.ConfiguracaoAgent) ConfiguracaoAgentResponseDTO {
+	return ConfiguracaoAgentResponseDTO{
+		ID:        model.ID,
+		AgentID:   model.AgentID,
+		Nome:      model.Nome,
+		Descricao: model.Descricao,
+	}
+}

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	adminService "Synapse/internal/app/admin/middleware/service"
@@ -40,7 +39,6 @@ func (m *IntegrationRbacMiddleware) RequireIntegrationPermission(integrationID s
 		}
 		// Valida o token e a permissão da empresa para a integração
 		integration, err = m.Service.CheckEnterpriseToken(ctx, token, integration.ID)
-		fmt.Print(integration)
 		if err != nil || integration == nil {
 			c.JSON(403, gin.H{"error": "Token inválido ou sem permissão para essa integração"})
 			c.Abort()

@@ -15,3 +15,8 @@ type AgentMessageRequestDTO struct {
 	VisitorID      string `json:"visitorId,omitempty"`
 	Streaming      bool   `json:"streaming,omitempty"` // opcional, mas pode ser fixo como false se preferir
 }
+
+// GetConfiguracaoAgentRequest representa o ID recebido para buscar configurações de X agente.
+type GetConfiguracaoAgentRequestDTO struct {
+	AgentID int64 `uri:"agent_id" binding:"required,min=1"`
+}
