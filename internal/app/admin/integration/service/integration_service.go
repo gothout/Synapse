@@ -102,8 +102,30 @@ func (s *service) CreateIntegracaoUser(data model.IntegracaoUser) error {
 	}
 
 	// Verifica se o usuário existe
-	if _, err := s.userRepo.ReadByID(data.UserID); err != nil {
-		return fmt.Errorf("usuário não encontrado")
+	user, err := s.userRepo.ReadByID(data.UserID)
+	if err != nil {
+		return fmt.Errorf("usuário nao encontrado")
+	}
+	if user == nil {
+		return fmt.Errorf("usuário nao encontrado")
+	}
+
+	// Verificar as integracoes para a empresa
+	integracoes, err := s.repo.GetIntegracoesByEnterpriseID(user.EnterpriseID)
+	if err != nil {
+		return fmt.Errorf("integração não encontrada")
+	}
+
+	// Verificar se o ID da integracao destino contem na empresa do usuario
+	var found bool
+	for _, item := range integracoes {
+		if item.IntegracaoID == data.IntegracaoID {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return fmt.Errorf("integração não encontrada")
 	}
 
 	// Cria vínculo

@@ -73,3 +73,57 @@ func (ac *AgentController) PostAgentConfig(ctx *gin.Context) {
 	// Sucesso, sem retorno
 	ctx.Status(http.StatusNoContent)
 }
+
+// PostAgentMessage godoc
+// @Summary      Enviar mensagem para agente Chatvolt
+// @Description  Envia uma mensagem ao agente da Chatvolt e retorna o conversationId para continuidade da conversa
+// @Tags         v1 - Integração Chatvolt
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Token de integração no formato: Bearer {token}"
+// @Param        request  body  dto.AgentMessageRequestDTO  true  "Dados de entrada da mensagem para o agente"
+// @Success      200      {object}  dto.AgentMessageResponseDTO
+// @Failure      400      {object}  rest_err.RestErr
+// @Failure      404      {object}  rest_err.RestErr
+// @Failure      500      {object}  rest_err.RestErr
+// @Router       /integrations/v1/chatvolt/agent/message [post]
+func (ac *AgentController) PostAgentMessage(ctx *gin.Context) {
+	var req dto.AgentMessageRequestDTO
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Campos obrigatórios ausentes ou inválidos", []rest_err.Causes{
+			rest_err.NewCause("body", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	if err := binding.ValidateAgentMessageRequestDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Erro de validação nos dados enviados", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Chamada do serviço retorna o model.AgentMessageResponse
+	modelResp, err := ac.service.EnviaMensagemParaAgente(ctx, req.AgentID, req.Query, req.ConversationID)
+	if err != nil {
+		switch {
+		case err.Error() == "configuração não encontrada":
+			restErr := rest_err.NewNotFoundError("Configuração do agente não encontrada")
+			ctx.JSON(restErr.Code, restErr)
+			return
+		default:
+			restErr := rest_err.NewInternalServerError("Erro ao enviar mensagem ao agente", []rest_err.Causes{
+				rest_err.NewCause("service", err.Error()),
+			})
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+	}
+
+	// Transforma model em DTO e retorna
+	resp := dto.FromModelResponse(modelResp)
+	ctx.JSON(http.StatusOK, resp)
+}

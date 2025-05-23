@@ -28,3 +28,9 @@ func (s *middlewareService) HasPermission(ctx context.Context, userID int64, mod
 func (s *middlewareService) ValidateTokenIntegration(ctx context.Context, token string) (*model.IntegrationWithPermissions, error) {
 	return s.repo.FindIntegrationByToken(ctx, token)
 }
+
+// CheckEnterpriseToken valida se o token fornecido está associado a um usuário e se esse usuário tem permissão
+// para a integração solicitada, além de verificar se a empresa desse usuário também está associada à integração.
+func (s *middlewareService) CheckEnterpriseToken(ctx context.Context, token string, integrationID string) (*model.IntegrationWithPermissions, error) {
+	return s.repo.CheckEnterpriseToken(ctx, token, integrationID)
+}
