@@ -118,3 +118,40 @@ func (s *agentService) BuscarConfiguracaoPorID(ctx context.Context, agentID int6
 
 	return agent, nil
 }
+
+// Atualizar pela API da chatvolt
+func (s *agentService) AtualizarAgentePelaAPI(ctx context.Context, agentID int64) error {
+
+	// Buscar configurações atuais
+	agent, err := s.repo.BuscarConfiguracaoPorID(ctx, agentID)
+	if err != nil {
+		return err
+	}
+
+	if agent.ID == 0 {
+		return fmt.Errorf("agente não encontrado")
+	}
+
+	// Agora busca configurações atuais pela API da Chatvolt
+	// Busca agente...
+	agente, err := s.api.BuscarAgente(ctx, agent.AgentID, agent.TokenChatVolt)
+	if err != nil {
+		print.Error(err)
+		return fmt.Errorf("%w", err)
+	}
+
+	config := map[string]interface{}{
+		"agent_id":             agente.Id,
+		"nome":                 agente.Nome,
+		"descricao":            agente.Descricao,
+		"token_chatvolt":       agente.TokenOrganization,
+		"organizationChatVolt": agente.OrganizationChatVoltID,
+	}
+
+	// Atualiza agente
+	if err := s.repo.AtualizarConfiguracaoPorID(ctx, agentID, config); err != nil {
+		return fmt.Errorf("erro ao atualizar configuração")
+	}
+
+	return nil
+}

@@ -1461,6 +1461,58 @@
                         }
                     }
                 }
+            },
+            "put": {
+                "description": "Rebusca as informações do agente na Chatvolt com base no ID e atualiza a configuração local",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 - Integração Chatvolt"
+                ],
+                "summary": "Atualizar configuração do agente pela API da Chatvolt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token de integração no formato: Bearer {token}",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID do agente registrado no sistema",
+                        "name": "agent_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Atualizado com sucesso, sem conteúdo"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest_err.RestErr"
+                        }
+                    }
+                }
             }
         },
         "/integrations/v1/chatvolt/agent/message": {

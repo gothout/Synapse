@@ -1277,6 +1277,42 @@ paths:
       summary: Buscar configuração do agente Chatvolt
       tags:
       - v1 - Integração Chatvolt
+    put:
+      consumes:
+      - application/json
+      description: Rebusca as informações do agente na Chatvolt com base no ID e atualiza
+        a configuração local
+      parameters:
+      - description: 'Token de integração no formato: Bearer {token}'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID do agente registrado no sistema
+        in: path
+        name: agent_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Atualizado com sucesso, sem conteúdo
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Atualizar configuração do agente pela API da Chatvolt
+      tags:
+      - v1 - Integração Chatvolt
   /integrations/v1/chatvolt/agent/message:
     post:
       consumes:
