@@ -103,3 +103,18 @@ func (s *agentService) EnviaMensagemParaAgente(ctx context.Context, agentID int6
 
 	return s.api.EnviarMensagem(ctx, agente.AgentID, agente.TokenChatVolt, message, conversationId)
 }
+
+// Busca configuraçoes de agente por ID
+func (s *agentService) BuscarConfiguracaoPorID(ctx context.Context, agentID int64) (agent.ConfiguracaoAgent, error) {
+
+	agent, err := s.repo.BuscarConfiguracaoPorID(ctx, agentID)
+	if err != nil {
+		return agent, err
+	}
+
+	if agent.ID == 0 {
+		return agent, fmt.Errorf("agente não encontrado")
+	}
+
+	return agent, nil
+}

@@ -127,3 +127,59 @@ func (ac *AgentController) PostAgentMessage(ctx *gin.Context) {
 	resp := dto.FromModelResponse(modelResp)
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// GetAgentConfigByID godoc
+// @Summary      Buscar configuração do agente Chatvolt
+// @Description  Retorna os dados públicos da configuração de um agente da Chatvolt por ID
+// @Tags         v1 - Integração Chatvolt
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Token de integração no formato: Bearer {token}"
+// @Param        agent_id path int true "ID do agente registrado no sistema"
+// @Success      200  {object}  dto.AgentConfigResponseDTO
+// @Failure      400  {object}  rest_err.RestErr
+// @Failure      404  {object}  rest_err.RestErr
+// @Failure      500  {object}  rest_err.RestErr
+// @Router       /integrations/v1/chatvolt/agent/config/{agent_id} [get]
+func (ac *AgentController) GetAgentConfigByID(ctx *gin.Context) {
+	var req dto.GetConfiguracaoAgentRequestDTO
+
+	// Faz o binding do path param
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("AgentID inválido na URI", []rest_err.Causes{
+			rest_err.NewCause("agent_id", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Validação manual (separada, caso queira mensagens personalizadas)
+	if err := binding.ValidateGetConfiguracaoAgentRequestDTO(req); err != nil {
+		restErr := rest_err.NewBadRequestValidationError("Validação falhou para o agent_id", []rest_err.Causes{
+			rest_err.NewCause("validação", err.Error()),
+		})
+		ctx.JSON(restErr.Code, restErr)
+		return
+	}
+
+	// Busca configuração no service
+	config, err := ac.service.BuscarConfiguracaoPorID(ctx, req.AgentID)
+	if err != nil {
+		switch {
+		case err.Error() == "configuração não encontrada":
+			restErr := rest_err.NewNotFoundError("Configuração do agente não encontrada")
+			ctx.JSON(restErr.Code, restErr)
+			return
+		default:
+			restErr := rest_err.NewInternalServerError("Erro ao buscar configuração do agente", []rest_err.Causes{
+				rest_err.NewCause("service", err.Error()),
+			})
+			ctx.JSON(restErr.Code, restErr)
+			return
+		}
+	}
+
+	// Transforma o modelo em DTO limitado e retorna
+	resp := dto.ToFormConfiguracaoAgentResponse(config)
+	ctx.JSON(http.StatusOK, resp)
+}
