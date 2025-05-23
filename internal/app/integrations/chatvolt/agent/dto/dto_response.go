@@ -59,3 +59,23 @@ func ToFormConfiguracaoAgentResponse(model model.ConfiguracaoAgent) Configuracao
 		Descricao: model.Descricao,
 	}
 }
+
+type ListConfiguracoesAgentResponseDTO struct {
+	ID        int64  `json:"id"`
+	AgentID   string `json:"agent_id"`
+	Nome      string `json:"nome"`
+	Descricao string `json:"descricao"`
+}
+
+func FromModelList(configs []model.ConfiguracaoAgent) []ListConfiguracoesAgentResponseDTO {
+	var result []ListConfiguracoesAgentResponseDTO
+	for _, c := range configs {
+		result = append(result, ListConfiguracoesAgentResponseDTO{
+			ID:        c.ID,
+			AgentID:   c.AgentID,
+			Nome:      c.Nome,
+			Descricao: c.Descricao,
+		})
+	}
+	return result
+}

@@ -60,6 +60,17 @@ definitions:
       visitorId:
         type: string
     type: object
+  agent.ListConfiguracoesAgentResponseDTO:
+    properties:
+      agent_id:
+        type: string
+      descricao:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+    type: object
   enterprise.CreateEnterpriseDTO:
     properties:
       cnpj:
@@ -1198,6 +1209,33 @@ paths:
       summary: Gerar token JWT
       tags:
       - v1 - Usuário
+  /integrations/v1/chatvolt/agent:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todos os agentes associados a uma empresa específica
+      parameters:
+      - description: 'Token de integração no formato: Bearer {token}'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/agent.ListConfiguracoesAgentResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Listar agentes por empresa
+      tags:
+      - v1 - Integração Chatvolt
   /integrations/v1/chatvolt/agent/config:
     post:
       consumes:
@@ -1239,6 +1277,42 @@ paths:
       tags:
       - v1 - Integração Chatvolt
   /integrations/v1/chatvolt/agent/config/{agent_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a configuração salva de um agente da Chatvolt com base no
+        ID informado na URI
+      parameters:
+      - description: 'Token de integração no formato: Bearer {token}'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID do agente registrado no sistema
+        in: path
+        name: agent_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Remoção bem-sucedida, sem conteúdo
+        "400":
+          description: AgentID inválido ou erro de validação
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "404":
+          description: Configuração do agente não encontrada
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+        "500":
+          description: Erro interno ao remover configuração
+          schema:
+            $ref: '#/definitions/rest_err.RestErr'
+      summary: Remover configuração do agente Chatvolt
+      tags:
+      - v1 - Integração Chatvolt
     get:
       consumes:
       - application/json
